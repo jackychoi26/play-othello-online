@@ -1,10 +1,22 @@
 import type { NextPage } from 'next';
-import Head from 'next/head';
-import Image from 'next/image';
-import styles from '../styles/Home.module.css';
+import styled from 'styled-components';
+import Board from '../components/Board';
+
+const Container = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+`;
 
 const Home: NextPage = () => {
-  return <div className={styles.container}></div>;
+  return (
+    <Container>
+      <Board />
+    </Container>
+  );
 };
 
 export default Home;
