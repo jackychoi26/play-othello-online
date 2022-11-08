@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Constants from '../constants';
 import Square from './Square';
 
-const GameBoard = styled.div`
+const Container = styled.div`
   width: 640px;
   height: 640px;
   border-radius: 4px;
@@ -30,7 +30,7 @@ const Board = (props: BoardProps) => {
     return false;
   };
 
-  return <GameBoard>{getBoard()}</GameBoard>;
+  return <Container>{getBoard()}</Container>;
 };
 
 export default Board;

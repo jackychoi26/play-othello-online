@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 import Constants from '../constants';
 
-const SquareButton = styled.button`
+const Container = styled.button`
   width: 60px;
   height: 60px;
   border: 1px solid black;
@@ -26,9 +26,9 @@ type SquareProps = {
 
 const Square = (props: SquareProps) => {
   return (
-    <SquareButton onClick={props.onPress}>
+    <Container onClick={props.onPress}>
       <Disc />
-    </SquareButton>
+    </Container>
   );
 };
 
