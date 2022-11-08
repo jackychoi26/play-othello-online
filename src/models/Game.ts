@@ -1,7 +1,11 @@
+import FixedLengthArray from '../common/FixedLengthArray';
 import SquareEnum from './SquareEnum';
 
 export default class Game {
-  private isBlack = true;
+  // If you want to show the options to UI, expose this property using readonly keyword
+  readonly possibleSquares: FixedLengthArray<[SquareEnum, SquareEnum]>[] = [];
+
+  private isCurrentPlayerBlack = true;
 
   // In SquareEnum
   // 0 = empty
@@ -34,11 +38,35 @@ export default class Game {
     return this.grid;
   };
 
-  makeMove = (row: number, column: number) => {
-    const square = this.grid[row][column];
+  placeDisc = (rowIndex: number, columnIndex: number) => {
+    const square = this.grid[rowIndex][columnIndex];
     if (square !== SquareEnum.empty) return;
 
-    this.grid[row][column] = this.isBlack ? SquareEnum.black : SquareEnum.white;
-    this.isBlack = !this.isBlack;
+    this.grid[rowIndex][columnIndex] = this.isCurrentPlayerBlack
+      ? SquareEnum.black
+      : SquareEnum.white;
+    this.isCurrentPlayerBlack = !this.isCurrentPlayerBlack;
+  };
+
+  private updateaPossibleSquares = () => {};
+
+  private isLegalMove = (rowIndex: number, columnIndex: number): boolean => {
+    return true;
+  };
+
+  private canFlipHorizontally = (row: SquareEnum[], index: number): boolean => {
+    const player = row[index];
+    if (player !== SquareEnum.empty) return false;
+
+    let discToFlip = this.isCurrentPlayerBlack
+      ? SquareEnum.white
+      : SquareEnum.black;
+
+    if (row[index - 1] === discToFlip) {
+    }
+    if (row[index + 1] === discToFlip) {
+    }
+
+    return false;
   };
 }

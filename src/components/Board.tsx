@@ -59,7 +59,7 @@ const Board = (props: BoardProps) => {
   };
 
   const onSquarePress = (row: number, column: number): void => {
-    props.game.makeMove(row, column);
+    props.game.placeDisc(row, column);
     setGameState(props.game.currentState().slice());
   };
 

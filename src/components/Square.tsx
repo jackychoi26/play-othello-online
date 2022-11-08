@@ -1,20 +1,21 @@
-import { SERVER_PROPS_ID } from 'next/dist/shared/lib/constants';
 import * as React from 'react';
 import styled from 'styled-components';
 
-import Constants from '../constants';
 import SquareEnum from '../models/SquareEnum';
 
 const Container = styled.button`
   width: 60px;
   height: 60px;
   border: 1px solid black;
+  padding: 0px 0px 0px 0px;
+  flex: 1;
 `;
 
 const Disc = styled.div`
   width: 50px;
   height: 50px;
   border-radius: 25px;
+  margin-left: 4px;
   background-color: ${props => props.color};
 `;
 
