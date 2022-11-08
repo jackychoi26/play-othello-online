@@ -1,28 +1,44 @@
+import SquareEnum from './SquareEnum';
+
 export default class Game {
+  private isBlack = true;
 
-    constructor(private grid: number[][]) { }
+  // In SquareEnum
+  // 0 = empty
+  // 1 = black
+  // 2 = white
+  constructor(private grid: SquareEnum[][]) {}
 
-    static create = (size: number): Game | undefined => {
-        if (size > 26) {
-            console.error("❌ Error: Currently we do not support board size larger than 26")
-            return
-        }
+  static create = (size: number): Game => {
+    const row: SquareEnum[] = [];
+    let column: SquareEnum[][] = [];
 
-        const row = []
-        let column: number[][] = []
-
-        for (let _ = 0; _ < size; _++) {
-            row.push(0)
-            column.push([0])
-        }
-
-        column.fill(row, 0, size)
-
-        return new Game(column)
+    for (let _ = 0; _ < size; _++) {
+      row.push(SquareEnum.empty);
     }
 
-    currentState = (): number[][] => {
-        console.log(this.grid)
-        return this.grid
+    for (let _ = 0; _ < size; _++) {
+      column.push(row.slice());
     }
+
+    column[3][3] = SquareEnum.white;
+    column[4][4] = SquareEnum.white;
+
+    column[4][3] = SquareEnum.black;
+    column[3][4] = SquareEnum.black;
+
+    return new Game(column);
+  };
+
+  currentState = (): SquareEnum[][] => {
+    return this.grid;
+  };
+
+  makeMove = (row: number, column: number) => {
+    const square = this.grid[row][column];
+    if (square !== SquareEnum.empty) return;
+
+    this.grid[row][column] = this.isBlack ? SquareEnum.black : SquareEnum.white;
+    this.isBlack = !this.isBlack;
+  };
 }
