@@ -42,8 +42,6 @@ export default class Game {
     const square = this.grid[rowIndex][columnIndex];
     if (square !== SquareEnum.empty) return;
 
-    console.log(this.canFlipHorizontally(this.grid[rowIndex], columnIndex));
-
     this.grid[rowIndex][columnIndex] = this.getCurrentPlayerColor();
     this.isCurrentPlayerBlack = !this.isCurrentPlayerBlack;
   };
@@ -54,22 +52,26 @@ export default class Game {
     return true;
   };
 
-  private canFlipHorizontally = (row: SquareEnum[], index: number): boolean => {
-    const player = row[index];
-    if (player !== SquareEnum.empty) return false;
+  private canFlipHorizontally = (
+    rowIndex: number,
+    position: number
+  ): boolean => {
+    const row = this.grid[rowIndex];
+    const attemptedMove = row[position];
+    if (attemptedMove !== SquareEnum.empty) return false;
 
     let opponentPlayerColor = this.getOpponentPlayerColor();
     let currentPlayerColor = this.getCurrentPlayerColor();
 
-    if (row[index - 1] === opponentPlayerColor) {
-      for (let i = index - 1; i >= 0; i--) {
+    if (row[position - 1] === opponentPlayerColor) {
+      for (let i = position - 1; i >= 0; i--) {
         if (row[i] === SquareEnum.empty) break;
         if (row[i] === currentPlayerColor) return true;
       }
     }
 
-    if (row[index + 1] === opponentPlayerColor) {
-      for (let i = index + 1; i < row.length; i++) {
+    if (row[position + 1] === opponentPlayerColor) {
+      for (let i = position + 1; i < row.length; i++) {
         console.log(currentPlayerColor);
         if (row[i] === SquareEnum.empty) break;
         if (row[i] === currentPlayerColor) return true;
