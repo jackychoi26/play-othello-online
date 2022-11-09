@@ -42,6 +42,8 @@ export default class Game {
     const square = this.grid[rowIndex][columnIndex];
     if (square !== SquareEnum.empty) return;
 
+    console.log(this.canFlipVertically(rowIndex, columnIndex));
+
     this.grid[rowIndex][columnIndex] = this.getCurrentPlayerColor();
     this.isCurrentPlayerBlack = !this.isCurrentPlayerBlack;
   };
@@ -49,32 +51,60 @@ export default class Game {
   private updateaPossibleSquares = () => {};
 
   private isLegalMove = (rowIndex: number, columnIndex: number): boolean => {
-    return true;
+    return this.canFlipVertically(rowIndex, columnIndex);
+    // return true;
   };
 
   private canFlipHorizontally = (
     rowIndex: number,
-    position: number
+    columnIndex: number
   ): boolean => {
     const row = this.grid[rowIndex];
-    const attemptedMove = row[position];
+    const attemptedMove = row[columnIndex];
     if (attemptedMove !== SquareEnum.empty) return false;
 
     let opponentPlayerColor = this.getOpponentPlayerColor();
     let currentPlayerColor = this.getCurrentPlayerColor();
 
-    if (row[position - 1] === opponentPlayerColor) {
-      for (let i = position - 1; i >= 0; i--) {
+    if (row[columnIndex - 1] === opponentPlayerColor) {
+      for (let i = columnIndex - 1; i >= 0; i--) {
         if (row[i] === SquareEnum.empty) break;
         if (row[i] === currentPlayerColor) return true;
       }
     }
 
-    if (row[position + 1] === opponentPlayerColor) {
-      for (let i = position + 1; i < row.length; i++) {
+    if (row[columnIndex + 1] === opponentPlayerColor) {
+      for (let i = columnIndex + 1; i < row.length; i++) {
         console.log(currentPlayerColor);
         if (row[i] === SquareEnum.empty) break;
         if (row[i] === currentPlayerColor) return true;
+      }
+    }
+
+    return false;
+  };
+
+  private canFlipVertically = (
+    rowIndex: number,
+    columnIndex: number
+  ): boolean => {
+    const attemptedMove = this.grid[rowIndex][columnIndex];
+    if (attemptedMove !== SquareEnum.empty) return false;
+
+    let opponentPlayerColor = this.getOpponentPlayerColor();
+    let currentPlayerColor = this.getCurrentPlayerColor();
+
+    if (this.grid[rowIndex - 1]?.[columnIndex] === opponentPlayerColor) {
+      for (let i = rowIndex - 1; i >= 0; i--) {
+        if (this.grid[i][columnIndex] === SquareEnum.empty) break;
+        if (this.grid[i][columnIndex] === currentPlayerColor) return true;
+      }
+    }
+
+    if (this.grid[rowIndex + 1]?.[columnIndex] === opponentPlayerColor) {
+      for (let i = rowIndex + 1; i < this.grid.length; i++) {
+        if (this.grid[i][columnIndex] === SquareEnum.empty) break;
+        if (this.grid[i][columnIndex] === currentPlayerColor) return true;
       }
     }
 
