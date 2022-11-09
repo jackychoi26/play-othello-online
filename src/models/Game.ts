@@ -61,11 +61,8 @@ export default class Game {
     let opponentPlayerColor = this.getOpponentPlayerColor();
     let currentPlayerColor = this.getCurrentPlayerColor();
 
-    console.log(row, index);
-
     if (row[index - 1] === opponentPlayerColor) {
-      for (let i = index - 1; i > 0; i--) {
-        console.log(row[i]);
+      for (let i = index - 1; i >= 0; i--) {
         if (row[i] === SquareEnum.empty) break;
         if (row[i] === currentPlayerColor) return true;
       }
