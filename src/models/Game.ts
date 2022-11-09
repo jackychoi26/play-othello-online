@@ -58,10 +58,9 @@ export default class Game {
     // return true;
   };
 
-  private canFlipHorizontally = (
-    rowIndex: number,
-    columnIndex: number
-  ): boolean => {
+  private canFlipHorizontally = (position: Position): boolean => {
+    const rowIndex = position.rowIndex;
+    const columnIndex = position.columnIndex;
     const row = this.grid[rowIndex];
     const attemptedMove = row[columnIndex];
     if (attemptedMove !== SquareState.empty) return false;
@@ -177,5 +176,5 @@ export default class Game {
     return this.isCurrentPlayerBlack ? SquareState.white : SquareState.black;
   };
 
-  private flip = () => {};
+  private flip = (position: Position) => {};
 }
