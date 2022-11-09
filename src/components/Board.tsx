@@ -3,7 +3,8 @@ import styled from 'styled-components';
 import Constants from '../constants';
 import Square from './Square';
 import Game from '../models/Game';
-import SquareEnum from '../models/SquareEnum';
+import SquareState from '../models/SquareState';
+import Position from '../models/Position';
 
 const Container = styled.div`
   border-radius: 4px;
@@ -21,7 +22,7 @@ type BoardProps = {
 };
 
 const Board = (props: BoardProps) => {
-  const [gameState, setGameState] = useState<SquareEnum[][]>(
+  const [gameState, setGameState] = useState<SquareState[][]>(
     props.game.currentState().slice()
   );
 
@@ -57,13 +58,13 @@ const Board = (props: BoardProps) => {
         key={`${row}::${column}`}
         disc={square}
         onPress={() => onSquarePress(row, column)}
-        isPressable={square == SquareEnum.empty}
+        isPressable={square == SquareState.empty}
       />
     );
   };
 
   const onSquarePress = (row: number, column: number): void => {
-    props.game.placeDisc(row, column);
+    props.game.placeDisc(new Position(row, column));
     setGameState(props.game.currentState().slice());
   };
 

@@ -26,12 +26,7 @@ const Home: NextPage = () => {
   return (
     <Container>
       <Board game={game} />
-      <NewGameButton
-        onClick={() => {
-          console.log('Hello');
-          setGame(Game.create(8));
-        }}
-      >
+      <NewGameButton onClick={() => setGame(Game.create(8))}>
         New Game
       </NewGameButton>
     </Container>

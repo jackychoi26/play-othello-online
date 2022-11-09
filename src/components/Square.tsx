@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import SquareEnum from '../models/SquareEnum';
+import SquareState from '../models/SquareState';
 
 const Container = styled.button`
   width: 60px;
@@ -26,13 +26,13 @@ type SquareProps = {
   onPress(): void;
   isPressable: boolean;
   steps?: number;
-  disc: SquareEnum;
+  disc: SquareState;
 };
 
 const Square = (props: SquareProps) => {
-  const getColor = (state: SquareEnum): string | null => {
-    if (state === SquareEnum.black) return 'black';
-    if (state === SquareEnum.white) return 'white';
+  const getColor = (state: SquareState): string | null => {
+    if (state === SquareState.black) return 'black';
+    if (state === SquareState.white) return 'white';
     return null;
   };
 
