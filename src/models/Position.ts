@@ -1,9 +1,10 @@
 export default class Position {
-  rowIndex: number;
-  columnIndex: number;
+  constructor(public rowIndex: number, public columnIndex: number) {}
 
-  constructor(rowIndex: number, columnIndex: number) {
-    this.rowIndex = rowIndex;
-    this.columnIndex = columnIndex;
-  }
+  isEqualTo = (position: Position): boolean => {
+    return (
+      this.rowIndex === position.rowIndex &&
+      this.columnIndex === position.columnIndex
+    );
+  };
 }
