@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Constants from '../constants';
 import Square from './Square';
@@ -21,9 +21,13 @@ type BoardProps = {
 };
 
 const Board = (props: BoardProps) => {
-  const [gameState, setGameState] = React.useState<SquareEnum[][]>(
+  const [gameState, setGameState] = useState<SquareEnum[][]>(
     props.game.currentState().slice()
   );
+
+  useEffect(() => {
+    setGameState(props.game.currentState().slice());
+  }, [props.game]);
 
   const getBoard = () => {
     let squares = [];

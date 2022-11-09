@@ -1,6 +1,7 @@
-import type { NextPage } from 'next';
 import { useState } from 'react';
+import type { NextPage } from 'next';
 import styled from 'styled-components';
+
 import Board from '../components/Board';
 import Game from '../models/Game';
 
@@ -25,7 +26,12 @@ const Home: NextPage = () => {
   return (
     <Container>
       <Board game={game} />
-      <NewGameButton onClick={() => setGame(Game.create(8))}>
+      <NewGameButton
+        onClick={() => {
+          console.log('Hello');
+          setGame(Game.create(8));
+        }}
+      >
         New Game
       </NewGameButton>
     </Container>

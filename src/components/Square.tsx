@@ -1,4 +1,3 @@
-import * as React from 'react';
 import styled from 'styled-components';
 
 import SquareEnum from '../models/SquareEnum';
@@ -24,7 +23,7 @@ type DiscProps = {
 };
 
 type SquareProps = {
-  onPress(arg1: number, arg2: number): void;
+  onPress(): void;
   isPressable: boolean;
   steps?: number;
   disc: SquareEnum;
@@ -38,7 +37,7 @@ const Square = (props: SquareProps) => {
   };
 
   return (
-    <Container onClick={() => props.onPress}>
+    <Container onClick={() => props.onPress()}>
       <Disc color={getColor(props.disc) ?? ''} />
     </Container>
   );

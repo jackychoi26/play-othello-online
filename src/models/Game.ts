@@ -42,9 +42,9 @@ export default class Game {
     const square = this.grid[rowIndex][columnIndex];
     if (square !== SquareEnum.empty) return;
 
-    this.grid[rowIndex][columnIndex] = this.isCurrentPlayerBlack
-      ? SquareEnum.black
-      : SquareEnum.white;
+    console.log(this.canFlipHorizontally(this.grid[rowIndex], columnIndex));
+
+    this.grid[rowIndex][columnIndex] = this.getCurrentPlayerColor();
     this.isCurrentPlayerBlack = !this.isCurrentPlayerBlack;
   };
 
@@ -58,15 +58,35 @@ export default class Game {
     const player = row[index];
     if (player !== SquareEnum.empty) return false;
 
-    let discToFlip = this.isCurrentPlayerBlack
-      ? SquareEnum.white
-      : SquareEnum.black;
+    let opponentPlayerColor = this.getOpponentPlayerColor();
+    let currentPlayerColor = this.getCurrentPlayerColor();
 
-    if (row[index - 1] === discToFlip) {
+    console.log(row, index);
+
+    if (row[index - 1] === opponentPlayerColor) {
+      for (let i = index - 1; i > 0; i--) {
+        console.log(row[i]);
+        if (row[i] === SquareEnum.empty) break;
+        if (row[i] === currentPlayerColor) return true;
+      }
     }
-    if (row[index + 1] === discToFlip) {
+
+    if (row[index + 1] === opponentPlayerColor) {
+      for (let i = index + 1; i < row.length; i++) {
+        console.log(currentPlayerColor);
+        if (row[i] === SquareEnum.empty) break;
+        if (row[i] === currentPlayerColor) return true;
+      }
     }
 
     return false;
+  };
+
+  private getCurrentPlayerColor = (): SquareEnum => {
+    return this.isCurrentPlayerBlack ? SquareEnum.black : SquareEnum.white;
+  };
+
+  private getOpponentPlayerColor = (): SquareEnum => {
+    return this.isCurrentPlayerBlack ? SquareEnum.white : SquareEnum.black;
   };
 }
