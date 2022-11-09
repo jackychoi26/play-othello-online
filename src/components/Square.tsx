@@ -16,8 +16,12 @@ const Disc = styled.div`
   height: 50px;
   border-radius: 25px;
   margin-left: 4px;
-  background-color: ${props => props.color};
+  background-color: ${(props: DiscProps) => props.color};
 `;
+
+type DiscProps = {
+  color: string;
+};
 
 type SquareProps = {
   onPress(arg1: number, arg2: number): void;
@@ -34,8 +38,8 @@ const Square = (props: SquareProps) => {
   };
 
   return (
-    <Container onClick={props.onPress}>
-      <Disc color={getColor(props.disc)} />
+    <Container onClick={() => props.onPress}>
+      <Disc color={getColor(props.disc) ?? ''} />
     </Container>
   );
 };
