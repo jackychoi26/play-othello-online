@@ -315,7 +315,7 @@ export default class Game {
   private flip = (position: Position, flipDirection: FlipDirection[]) => {
     for (let direction of flipDirection) {
       const positionsToFlip = this.positionsForDirection(position, direction);
-      console.log(positionsToFlip);
+
       for (let positionToFlip of positionsToFlip) {
         if (
           this.grid[positionToFlip.rowIndex][positionToFlip.columnIndex] !==
@@ -349,7 +349,7 @@ export default class Game {
     } else if (direction === FlipDirection.bottomLeft) {
       return this.traverseBottomLeft(position);
     } else if (direction === FlipDirection.left) {
-      return this.traverseTopLeft(position);
+      return this.traverseLeft(position);
     } else {
       return [];
     }
