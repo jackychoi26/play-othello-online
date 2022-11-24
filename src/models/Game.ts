@@ -8,7 +8,7 @@ export default class Game {
   private gameStateHistory: GameState[] = [];
 
   constructor(private gameState: GameState) {
-    this.updateaPossibleMoves();
+    this.updatePossibleMoves();
   }
 
   static create = (size: number): Game => {
@@ -29,7 +29,7 @@ export default class Game {
     column[4][3] = SquareState.black;
     column[3][4] = SquareState.black;
 
-    const game = new Game(new GameState(true, [], column));
+    const game = new Game(new GameState(true, [], column, 2, 2));
     return game;
   };
 
@@ -71,24 +71,26 @@ export default class Game {
   };
 
   private gameOver = () => {
-    alert('Game over');
+
   };
 
   private copyGameState = (gameState: GameState): GameState => {
     return new GameState(
       gameState.isCurrentPlayerBlack,
       gameState.possibleMoves.slice(),
-      gameState.grid.map(row => row.slice())
+      gameState.grid.map(row => row.slice()),
+      gameState.numberOfBlackDisc,
+      gameState.numberOfWhiteDisc
     )
   }
 
   private updateGameState = () => {
     this.changeCurrentPlayer();
-    this.updateaPossibleMoves();
+    this.updatePossibleMoves();
 
     if (this.gameState.possibleMoves.length === 0) {
       this.changeCurrentPlayer();
-      this.updateaPossibleMoves();
+      this.updatePossibleMoves();
       if (this.gameState.possibleMoves.length === 0) {
         this.gameOver();
       }
@@ -99,7 +101,7 @@ export default class Game {
     this.gameState.isCurrentPlayerBlack = !this.gameState.isCurrentPlayerBlack;
   };
 
-  private updateaPossibleMoves = () => {
+  private updatePossibleMoves = () => {
     this.gameState.possibleMoves = [];
     const emptySquaresAdjacentToDisc = this.getAllEmptySquaresAdjacentToDisc();
 
@@ -114,14 +116,31 @@ export default class Game {
     });
   };
 
+  private clearDiscCount = () => {
+    this.gameState.numberOfBlackDisc = 0
+    this.gameState.numberOfWhiteDisc = 0
+  }
+
+  private countDisc = (squareState: SquareState) => {
+    if (squareState === SquareState.black) {
+      this.gameState.numberOfBlackDisc++
+    } else if (squareState === SquareState.white) {
+      this.gameState.numberOfWhiteDisc++
+    }
+  }
+
   private getAllEmptySquaresAdjacentToDisc = (): Position[] => {
     const grid = this.gameState.grid;
     const boardSize = grid.length;
     const emptySquaresAdjacentToDisc = [];
+    this.clearDiscCount()
 
     for (let i = 0; i < boardSize; i++) {
       for (let j = 0; j < boardSize; j++) {
-        if (grid[i]?.[j] !== SquareState.empty) continue;
+        if (grid[i]?.[j] !== SquareState.empty) {
+          this.countDisc(grid[i][j])
+          continue;
+        }
 
         if (
           grid[i + 1]?.[j + 1] !== SquareState.empty ||

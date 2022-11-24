@@ -17,8 +17,9 @@ const Container = styled.div`
   width: 100vw;
 `;
 
-const GameStatus = styled.p`
+const GameInfo = styled.p`
   text-align: center;
+  margin-top: 0px;
 `;
 
 const UtilityButtonContainer = styled.div`
@@ -48,6 +49,10 @@ const Home: NextPage = () => {
     return `This is ${playerString} player's turn`;
   };
 
+  const gameScore = (): string => {
+    return `black: ${gameState.numberOfBlackDisc}   white: ${gameState.numberOfWhiteDisc}`;
+  };
+
   const placeDisc = (position: Position) => {
     const gameState = game.placeDisc(position);
 
@@ -66,7 +71,8 @@ const Home: NextPage = () => {
 
   return (
     <Container>
-      <GameStatus>{gameStatusString()}</GameStatus>
+      <GameInfo>{gameStatusString()}</GameInfo>
+      <GameInfo>{gameScore()}</GameInfo>
       <Board gameState={gameState} placeDisc={placeDisc} />
       <UtilityButtonContainer>
         <UtilityButton onClick={() => setGame(Game.create(8))}>
