@@ -1,5 +1,6 @@
 import FixedLengthArray from '../common/FixedLengthArray';
 import FlipDirection from './FlipDirection';
+import GameState from './GameState';
 import Position from './Position';
 import PossibleMove from './PossibleMove';
 import SquareState from './SquareState';
@@ -37,11 +38,15 @@ export default class Game {
     return game;
   };
 
-  currentState = (): SquareState[][] => {
-    return this.grid;
+  currentGameState = (): GameState => {
+    return new GameState(
+      this.isCurrentPlayerBlack,
+      this.possibleMoves,
+      this.grid
+    );
   };
 
-  placeDisc = (position: Position) => {
+  placeDisc = (position: Position): GameState | undefined => {
     // Replace with customized function of find first
     const possibleMove = this.possibleMoves.find(element =>
       element.position.isEqualTo(position)
@@ -58,9 +63,13 @@ export default class Game {
 
     this.isCurrentPlayerBlack = !this.isCurrentPlayerBlack;
     this.updateaPossibleMoves();
-  };
 
-  getPossibleMoves = (): PossibleMove[] => this.possibleMoves;
+    return new GameState(
+      this.isCurrentPlayerBlack,
+      this.possibleMoves,
+      this.grid
+    );
+  };
 
   private updateaPossibleMoves = () => {
     this.possibleMoves = [];

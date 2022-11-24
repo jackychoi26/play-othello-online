@@ -8,6 +8,7 @@ const Container = styled.button`
   border: 1px solid black;
   padding: 0px 0px 0px 0px;
   flex: 1;
+  background-color: ${(props: ColorProps) => props.color};
 `;
 
 const Disc = styled.div`
@@ -15,30 +16,37 @@ const Disc = styled.div`
   height: 50px;
   border-radius: 25px;
   margin-left: 4px;
-  background-color: ${(props: DiscProps) => props.color};
+  background-color: ${(props: ColorProps) => props.color};
 `;
 
-type DiscProps = {
+type ColorProps = {
   color: string;
 };
 
 type SquareProps = {
   onPress(): void;
-  isPressable: boolean;
   steps?: number;
   disc: SquareState;
+  shouldHighLightSquare: boolean;
 };
 
 const Square = (props: SquareProps) => {
-  const getColor = (state: SquareState): string | null => {
+  const getColorForDisc = (state: SquareState): string | null => {
     if (state === SquareState.black) return 'black';
     if (state === SquareState.white) return 'white';
     return null;
   };
 
+  const getColorForSquare = (shouldHighlightSquare: boolean): string => {
+    return shouldHighlightSquare ? 'green' : '';
+  };
+
   return (
-    <Container onClick={() => props.onPress()}>
-      <Disc color={getColor(props.disc) ?? ''} />
+    <Container
+      color={getColorForSquare(props.shouldHighLightSquare)}
+      onClick={() => props.onPress()}
+    >
+      <Disc color={getColorForDisc(props.disc) ?? ''} />
     </Container>
   );
 };
