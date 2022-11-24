@@ -1,4 +1,3 @@
-import FixedLengthArray from '../common/FixedLengthArray';
 import FlipDirection from './FlipDirection';
 import GameState from './GameState';
 import Position from './Position';
@@ -8,7 +7,7 @@ import SquareState from './SquareState';
 export default class Game {
   private gameStateHistory: GameState[] = [];
 
-  constructor(private gameState: GameState) {}
+  constructor(private gameState: GameState) { }
 
   static create = (size: number): Game => {
     const row: SquareState[] = [];
@@ -347,7 +346,7 @@ export default class Game {
       for (let positionToFlip of positionsToFlip) {
         if (
           this.gameState.grid[positionToFlip.rowIndex][
-            positionToFlip.columnIndex
+          positionToFlip.columnIndex
           ] !== this.getOpponentPlayerColor()
         ) {
           break;

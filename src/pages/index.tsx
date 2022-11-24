@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { NextPage } from 'next';
+import { NextPage } from 'next';
 import styled from 'styled-components';
 
 import Board from '../components/Board';
