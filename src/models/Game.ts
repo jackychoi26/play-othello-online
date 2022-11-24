@@ -65,14 +65,12 @@ export default class Game {
     const lastGameState = this.gameStateHistory.pop();
 
     if (lastGameState !== undefined) {
-      this.gameState = lastGameState
-      return lastGameState
+      this.gameState = lastGameState;
+      return lastGameState;
     }
   };
 
-  private gameOver = () => {
-
-  };
+  private gameOver = () => { };
 
   private copyGameState = (gameState: GameState): GameState => {
     return new GameState(
@@ -81,8 +79,8 @@ export default class Game {
       gameState.grid.map(row => row.slice()),
       gameState.numberOfBlackDisc,
       gameState.numberOfWhiteDisc
-    )
-  }
+    );
+  };
 
   private updateGameState = () => {
     this.changeCurrentPlayer();
@@ -117,28 +115,28 @@ export default class Game {
   };
 
   private clearDiscCount = () => {
-    this.gameState.numberOfBlackDisc = 0
-    this.gameState.numberOfWhiteDisc = 0
-  }
+    this.gameState.numberOfBlackDisc = 0;
+    this.gameState.numberOfWhiteDisc = 0;
+  };
 
   private countDisc = (squareState: SquareState) => {
     if (squareState === SquareState.black) {
-      this.gameState.numberOfBlackDisc++
+      this.gameState.numberOfBlackDisc++;
     } else if (squareState === SquareState.white) {
-      this.gameState.numberOfWhiteDisc++
+      this.gameState.numberOfWhiteDisc++;
     }
-  }
+  };
 
   private getAllEmptySquaresAdjacentToDisc = (): Position[] => {
     const grid = this.gameState.grid;
     const boardSize = grid.length;
     const emptySquaresAdjacentToDisc = [];
-    this.clearDiscCount()
+    this.clearDiscCount();
 
     for (let i = 0; i < boardSize; i++) {
       for (let j = 0; j < boardSize; j++) {
         if (grid[i]?.[j] !== SquareState.empty) {
-          this.countDisc(grid[i][j])
+          this.countDisc(grid[i][j]);
           continue;
         }
 
