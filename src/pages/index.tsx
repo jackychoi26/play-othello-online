@@ -20,6 +20,7 @@ const Container = styled.div`
 const GameInfo = styled.p`
   text-align: center;
   margin-top: 0px;
+  font-size: large;
 `;
 
 const UtilityButtonContainer = styled.div`
