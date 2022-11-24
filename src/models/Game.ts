@@ -6,14 +6,9 @@ import PossibleMove from './PossibleMove';
 import SquareState from './SquareState';
 
 export default class Game {
-  private possibleMoves: PossibleMove[] = [];
-  private isCurrentPlayerBlack = true;
+  private gameStateHistory: GameState[] = [];
 
-  // In SquareState
-  // 0 = empty
-  // 1 = black
-  // 2 = white
-  constructor(private grid: SquareState[][]) {}
+  constructor(private gameState: GameState) {}
 
   static create = (size: number): Game => {
     const row: SquareState[] = [];
@@ -33,22 +28,18 @@ export default class Game {
     column[4][3] = SquareState.black;
     column[3][4] = SquareState.black;
 
-    const game = new Game(column);
+    const game = new Game(new GameState(true, [], column));
     game.updateaPossibleMoves();
     return game;
   };
 
   currentGameState = (): GameState => {
-    return new GameState(
-      this.isCurrentPlayerBlack,
-      this.possibleMoves,
-      this.grid
-    );
+    return { ...this.gameState };
   };
 
   placeDisc = (position: Position): GameState | undefined => {
     // Replace with customized function of find first
-    const possibleMove = this.possibleMoves.find(element =>
+    const possibleMove = this.gameState.possibleMoves.find(element =>
       element.position.isEqualTo(position)
     );
 
@@ -56,51 +47,78 @@ export default class Game {
 
     const rowIndex = position.rowIndex;
     const columnIndex = position.columnIndex;
-    const square = this.grid[rowIndex][columnIndex];
+    const grid = this.gameState.grid;
+    const square = grid[rowIndex][columnIndex];
     if (square !== SquareState.empty) return;
-    this.grid[rowIndex][columnIndex] = this.getCurrentPlayerColor();
+    grid[rowIndex][columnIndex] = this.getCurrentPlayerColor();
     this.flip(position, possibleMove.flipDirections);
 
-    this.isCurrentPlayerBlack = !this.isCurrentPlayerBlack;
+    this.updateGameState();
+    this.gameStateHistory.push({ ...this.gameState });
+
+    return { ...this.gameState };
+  };
+
+  isCurrentPlayerBlack = (): boolean => this.gameState.isCurrentPlayerBlack;
+
+  regret = () => {
+    console.log('Regret');
+  };
+
+  private gameOver = () => {
+    alert('Game over');
+  };
+
+  private updateGameState = () => {
+    this.changeCurrentPlayer();
     this.updateaPossibleMoves();
 
-    return new GameState(
-      this.isCurrentPlayerBlack,
-      this.possibleMoves,
-      this.grid
-    );
+    if (this.gameState.possibleMoves.length === 0) {
+      this.changeCurrentPlayer();
+      this.updateaPossibleMoves();
+      if (this.gameState.possibleMoves.length === 0) {
+        this.gameOver();
+      }
+    }
+  };
+
+  private changeCurrentPlayer = () => {
+    this.gameState.isCurrentPlayerBlack = !this.gameState.isCurrentPlayerBlack;
   };
 
   private updateaPossibleMoves = () => {
-    this.possibleMoves = [];
+    this.gameState.possibleMoves = [];
     const emptySquaresAdjacentToDisc = this.getAllEmptySquaresAdjacentToDisc();
 
     emptySquaresAdjacentToDisc.forEach(square => {
       const flipDirections = this.getFlipDirections(square);
 
       if (flipDirections.length > 0) {
-        this.possibleMoves.push(new PossibleMove(square, flipDirections));
+        this.gameState.possibleMoves.push(
+          new PossibleMove(square, flipDirections)
+        );
       }
     });
   };
 
   private getAllEmptySquaresAdjacentToDisc = (): Position[] => {
-    const boardSize = this.grid.length;
+    const grid = this.gameState.grid;
+    const boardSize = grid.length;
     const emptySquaresAdjacentToDisc = [];
 
     for (let i = 0; i < boardSize; i++) {
       for (let j = 0; j < boardSize; j++) {
-        if (this.grid[i]?.[j] !== SquareState.empty) continue;
+        if (grid[i]?.[j] !== SquareState.empty) continue;
 
         if (
-          this.grid[i + 1]?.[j + 1] !== SquareState.empty ||
-          this.grid[i + 1]?.[j - 1] !== SquareState.empty ||
-          this.grid[i - 1]?.[j - 1] !== SquareState.empty ||
-          this.grid[i - 1]?.[j + 1] !== SquareState.empty ||
-          this.grid[i + 1]?.[j] !== SquareState.empty ||
-          this.grid[i - 1]?.[j] !== SquareState.empty ||
-          this.grid[i]?.[j + 1] !== SquareState.empty ||
-          this.grid[i]?.[j - 1] !== SquareState.empty
+          grid[i + 1]?.[j + 1] !== SquareState.empty ||
+          grid[i + 1]?.[j - 1] !== SquareState.empty ||
+          grid[i - 1]?.[j - 1] !== SquareState.empty ||
+          grid[i - 1]?.[j + 1] !== SquareState.empty ||
+          grid[i + 1]?.[j] !== SquareState.empty ||
+          grid[i - 1]?.[j] !== SquareState.empty ||
+          grid[i]?.[j + 1] !== SquareState.empty ||
+          grid[i]?.[j - 1] !== SquareState.empty
         ) {
           emptySquaresAdjacentToDisc.push(new Position(i, j));
         }
@@ -119,9 +137,10 @@ export default class Game {
   };
 
   private canFlipHorizontally = (position: Position): FlipDirection[] => {
+    const grid = this.gameState.grid;
     const rowIndex = position.rowIndex;
     const columnIndex = position.columnIndex;
-    const row = this.grid[rowIndex];
+    const row = grid[rowIndex];
     const attemptedMove = row[columnIndex];
     if (attemptedMove !== SquareState.empty) throw 'The move is illegal';
 
@@ -136,8 +155,7 @@ export default class Game {
       );
 
       for (let leftPosition of leftPositions) {
-        const square =
-          this.grid[leftPosition.rowIndex]?.[leftPosition.columnIndex];
+        const square = grid[leftPosition.rowIndex]?.[leftPosition.columnIndex];
 
         if (square === SquareState.empty) break;
 
@@ -155,7 +173,7 @@ export default class Game {
 
       for (let rightPosition of rightPositions) {
         const square =
-          this.grid[rightPosition.rowIndex]?.[rightPosition.columnIndex];
+          grid[rightPosition.rowIndex]?.[rightPosition.columnIndex];
 
         if (square === SquareState.empty) break;
 
@@ -170,9 +188,10 @@ export default class Game {
   };
 
   private canFlipVertically = (position: Position): FlipDirection[] => {
+    const grid = this.gameState.grid;
     const rowIndex = position.rowIndex;
     const columnIndex = position.columnIndex;
-    const attemptedMove = this.grid[rowIndex][columnIndex];
+    const attemptedMove = grid[rowIndex][columnIndex];
     if (attemptedMove !== SquareState.empty) throw 'The move is illegal';
 
     const flipDirection: FlipDirection[] = [];
@@ -180,14 +199,13 @@ export default class Game {
     let opponentPlayerColor = this.getOpponentPlayerColor();
     let currentPlayerColor = this.getCurrentPlayerColor();
 
-    if (this.grid[rowIndex - 1]?.[columnIndex] === opponentPlayerColor) {
+    if (grid[rowIndex - 1]?.[columnIndex] === opponentPlayerColor) {
       const topPositions = this.traverseTop(
         new Position(rowIndex, columnIndex)
       );
 
       for (let topPosition of topPositions) {
-        const square =
-          this.grid[topPosition.rowIndex]?.[topPosition.columnIndex];
+        const square = grid[topPosition.rowIndex]?.[topPosition.columnIndex];
 
         if (square === SquareState.empty) break;
 
@@ -198,14 +216,14 @@ export default class Game {
       }
     }
 
-    if (this.grid[rowIndex + 1]?.[columnIndex] === opponentPlayerColor) {
+    if (grid[rowIndex + 1]?.[columnIndex] === opponentPlayerColor) {
       const bottomPositions = this.traverseBottom(
         new Position(rowIndex, columnIndex)
       );
 
       for (let bottomPosition of bottomPositions) {
         const square =
-          this.grid[bottomPosition.rowIndex]?.[bottomPosition.columnIndex];
+          grid[bottomPosition.rowIndex]?.[bottomPosition.columnIndex];
 
         if (square === SquareState.empty) break;
 
@@ -220,9 +238,10 @@ export default class Game {
   };
 
   private canFlipDiagonally = (position: Position): FlipDirection[] => {
+    const grid = this.gameState.grid;
     const rowIndex = position.rowIndex;
     const columnIndex = position.columnIndex;
-    const attemptedMove = this.grid[rowIndex][columnIndex];
+    const attemptedMove = grid[rowIndex][columnIndex];
     if (attemptedMove !== SquareState.empty) throw 'The move is illegal';
 
     const flipDirection: FlipDirection[] = [];
@@ -231,14 +250,14 @@ export default class Game {
     let currentPlayerColor = this.getCurrentPlayerColor();
 
     // Top Left
-    if (this.grid[rowIndex - 1]?.[columnIndex - 1] === opponentPlayerColor) {
+    if (grid[rowIndex - 1]?.[columnIndex - 1] === opponentPlayerColor) {
       const topLeftPositions = this.traverseTopLeft(
         new Position(rowIndex, columnIndex)
       );
 
       for (let topLeftPosition of topLeftPositions) {
         const square =
-          this.grid[topLeftPosition.rowIndex]?.[topLeftPosition.columnIndex];
+          grid[topLeftPosition.rowIndex]?.[topLeftPosition.columnIndex];
 
         if (square === SquareState.empty) break;
 
@@ -250,14 +269,14 @@ export default class Game {
     }
 
     // Top Right
-    if (this.grid[rowIndex - 1]?.[columnIndex + 1] === opponentPlayerColor) {
+    if (grid[rowIndex - 1]?.[columnIndex + 1] === opponentPlayerColor) {
       const topRightPositions = this.traverseTopRight(
         new Position(rowIndex, columnIndex)
       );
 
       for (let topRightPosition of topRightPositions) {
         const square =
-          this.grid[topRightPosition.rowIndex]?.[topRightPosition.columnIndex];
+          grid[topRightPosition.rowIndex]?.[topRightPosition.columnIndex];
 
         if (square === SquareState.empty) break;
 
@@ -269,16 +288,14 @@ export default class Game {
     }
 
     // Bottom Right
-    if (this.grid[rowIndex + 1]?.[columnIndex + 1] === opponentPlayerColor) {
+    if (grid[rowIndex + 1]?.[columnIndex + 1] === opponentPlayerColor) {
       const bottomRightPositions = this.traverseBottomRight(
         new Position(rowIndex, columnIndex)
       );
 
       for (let bottomRightPosition of bottomRightPositions) {
         const square =
-          this.grid[bottomRightPosition.rowIndex]?.[
-            bottomRightPosition.columnIndex
-          ];
+          grid[bottomRightPosition.rowIndex]?.[bottomRightPosition.columnIndex];
 
         if (square === SquareState.empty) break;
 
@@ -290,16 +307,14 @@ export default class Game {
     }
 
     // Bottom Left
-    if (this.grid[rowIndex + 1]?.[columnIndex - 1] === opponentPlayerColor) {
+    if (grid[rowIndex + 1]?.[columnIndex - 1] === opponentPlayerColor) {
       const bottomLeftPositions = this.traverseBottomLeft(
         new Position(rowIndex, columnIndex)
       );
 
       for (let bottomLeftPosition of bottomLeftPositions) {
         const square =
-          this.grid[bottomLeftPosition.rowIndex]?.[
-            bottomLeftPosition.columnIndex
-          ];
+          grid[bottomLeftPosition.rowIndex]?.[bottomLeftPosition.columnIndex];
 
         if (square === SquareState.empty) break;
 
@@ -314,11 +329,15 @@ export default class Game {
   };
 
   private getCurrentPlayerColor = (): SquareState => {
-    return this.isCurrentPlayerBlack ? SquareState.black : SquareState.white;
+    return this.gameState.isCurrentPlayerBlack
+      ? SquareState.black
+      : SquareState.white;
   };
 
   private getOpponentPlayerColor = (): SquareState => {
-    return this.isCurrentPlayerBlack ? SquareState.white : SquareState.black;
+    return this.gameState.isCurrentPlayerBlack
+      ? SquareState.white
+      : SquareState.black;
   };
 
   private flip = (position: Position, flipDirection: FlipDirection[]) => {
@@ -327,14 +346,16 @@ export default class Game {
 
       for (let positionToFlip of positionsToFlip) {
         if (
-          this.grid[positionToFlip.rowIndex][positionToFlip.columnIndex] !==
-          this.getOpponentPlayerColor()
+          this.gameState.grid[positionToFlip.rowIndex][
+            positionToFlip.columnIndex
+          ] !== this.getOpponentPlayerColor()
         ) {
           break;
         }
 
-        this.grid[positionToFlip.rowIndex][positionToFlip.columnIndex] =
-          this.getCurrentPlayerColor();
+        this.gameState.grid[positionToFlip.rowIndex][
+          positionToFlip.columnIndex
+        ] = this.getCurrentPlayerColor();
       }
     }
   };
@@ -383,7 +404,7 @@ export default class Game {
 
     for (
       let i = position.rowIndex - 1, j = position.columnIndex + 1;
-      i >= 0 && j < this.grid.length;
+      i >= 0 && j < this.gameState.grid.length;
       i--, j++
     ) {
       topRightPositions.push(new Position(i, j));
@@ -397,7 +418,8 @@ export default class Game {
 
     for (
       let i = position.rowIndex + 1, j = position.columnIndex + 1;
-      i < this.grid[position.rowIndex].length && j < this.grid.length;
+      i < this.gameState.grid[position.rowIndex].length &&
+      j < this.gameState.grid.length;
       i++, j++
     ) {
       bottomRightPositions.push(new Position(i, j));
@@ -411,7 +433,7 @@ export default class Game {
 
     for (
       let i = position.rowIndex + 1, j = position.columnIndex - 1;
-      i < this.grid[position.rowIndex].length && j >= 0;
+      i < this.gameState.grid[position.rowIndex].length && j >= 0;
       i++, j--
     ) {
       bottomLeftPositions.push(new Position(i, j));
@@ -433,7 +455,7 @@ export default class Game {
   private traverseBottom = (position: Position): Position[] => {
     const bottomPositions = [];
 
-    for (let i = position.rowIndex + 1; i < this.grid.length; i++) {
+    for (let i = position.rowIndex + 1; i < this.gameState.grid.length; i++) {
       bottomPositions.push(new Position(i, position.columnIndex));
     }
 
@@ -445,7 +467,7 @@ export default class Game {
 
     for (
       let i = position.columnIndex + 1;
-      i < this.grid[position.rowIndex].length;
+      i < this.gameState.grid[position.rowIndex].length;
       i++
     ) {
       rightPositions.push(new Position(position.rowIndex, i));
