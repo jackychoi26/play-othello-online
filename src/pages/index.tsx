@@ -52,7 +52,15 @@ const Home: NextPage = () => {
     const gameState = game.placeDisc(position);
 
     if (gameState !== undefined) {
-      setGameState(gameState);
+      setGameState({ ...gameState });
+    }
+  };
+
+  const retract = () => {
+    const lastGameState = game.retract();
+
+    if (lastGameState !== undefined) {
+      setGameState(lastGameState);
     }
   };
 
@@ -64,7 +72,7 @@ const Home: NextPage = () => {
         <UtilityButton onClick={() => setGame(Game.create(8))}>
           New Game
         </UtilityButton>
-        <UtilityButton onClick={() => game.regret()}>Regret</UtilityButton>
+        <UtilityButton onClick={() => retract()}>Retract</UtilityButton>
       </UtilityButtonContainer>
     </Container>
   );

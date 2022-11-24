@@ -7,7 +7,9 @@ import SquareState from './SquareState';
 export default class Game {
   private gameStateHistory: GameState[] = [];
 
-  constructor(private gameState: GameState) { }
+  constructor(private gameState: GameState) {
+    this.updateaPossibleMoves();
+  }
 
   static create = (size: number): Game => {
     const row: SquareState[] = [];
@@ -28,7 +30,6 @@ export default class Game {
     column[3][4] = SquareState.black;
 
     const game = new Game(new GameState(true, [], column));
-    game.updateaPossibleMoves();
     return game;
   };
 
@@ -49,24 +50,37 @@ export default class Game {
     const grid = this.gameState.grid;
     const square = grid[rowIndex][columnIndex];
     if (square !== SquareState.empty) return;
+
+    this.gameStateHistory.push(this.copyGameState(this.gameState));
+
     grid[rowIndex][columnIndex] = this.getCurrentPlayerColor();
     this.flip(position, possibleMove.flipDirections);
-
     this.updateGameState();
-    this.gameStateHistory.push({ ...this.gameState });
-
     return { ...this.gameState };
   };
 
   isCurrentPlayerBlack = (): boolean => this.gameState.isCurrentPlayerBlack;
 
-  regret = () => {
-    console.log('Regret');
+  retract = (): GameState | undefined => {
+    const lastGameState = this.gameStateHistory.pop();
+
+    if (lastGameState !== undefined) {
+      this.gameState = lastGameState
+      return lastGameState
+    }
   };
 
   private gameOver = () => {
     alert('Game over');
   };
+
+  private copyGameState = (gameState: GameState): GameState => {
+    return new GameState(
+      gameState.isCurrentPlayerBlack,
+      gameState.possibleMoves.slice(),
+      gameState.grid.map(row => row.slice())
+    )
+  }
 
   private updateGameState = () => {
     this.changeCurrentPlayer();
