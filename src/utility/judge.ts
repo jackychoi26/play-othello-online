@@ -5,6 +5,43 @@ import Position from '../models/Position';
 import PossibleMove from '../models/PossibleMove';
 import SquareState from '../models/SquareState';
 
+const flip = (
+  gameState: GameState,
+  position: Position,
+  flipDirections: FlipDirection[]
+): GameState => {
+  const newGameState = copyGameState(gameState);
+
+  for (let direction of flipDirections) {
+    const positionsToFlip = positionsForDirection(
+      newGameState.grid,
+      position,
+      direction
+    );
+
+    for (let positionToFlip of positionsToFlip) {
+      if (
+        newGameState.grid[positionToFlip.rowIndex][
+          positionToFlip.columnIndex
+        ] !== getOpponentDiscColor(newGameState.isCurrentPlayerBlack)
+      ) {
+        break;
+      }
+
+      newGameState.grid[positionToFlip.rowIndex][positionToFlip.columnIndex] =
+        getCurrentDiscColor(newGameState.isCurrentPlayerBlack);
+    }
+  }
+
+  return newGameState;
+};
+
+const isGameOver = (gameState: GameState): boolean => {
+  const blackMobility = getPossibleMoves(gameState.grid, Player.black);
+  const whiteMobility = getPossibleMoves(gameState.grid, Player.white);
+  return blackMobility.length === 0 && whiteMobility.length === 0;
+};
+
 const getPossibleMoves = (
   grid: SquareState[][],
   player: Player
@@ -426,8 +463,21 @@ const traverseTopLeft = (position: Position): Position[] => {
   return topLeftPositions;
 };
 
+const getCurrentDiscColor = (isCurrentPlayerBlack: boolean): SquareState =>
+  isCurrentPlayerBlack ? SquareState.black : SquareState.white;
+
+const getOpponentDiscColor = (isCurrentPlayerBlack: boolean): SquareState =>
+  isCurrentPlayerBlack ? SquareState.white : SquareState.black;
+
+const getCurrentPlayer = (isCurrentPlayerBlack: boolean): Player =>
+  isCurrentPlayerBlack ? Player.black : Player.white;
+
 export default {
   getPossibleMoves,
   copyGameState,
   positionsForDirection,
+  isGameOver,
+  flip,
+  getCurrentDiscColor,
+  getCurrentPlayer,
 };

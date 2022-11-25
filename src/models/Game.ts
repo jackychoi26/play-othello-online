@@ -4,7 +4,6 @@ import FlipDirection from './FlipDirection';
 import GameState from './GameState';
 import Player from './Player';
 import Position from './Position';
-import PossibleMove from './PossibleMove';
 import SquareState from './SquareState';
 
 export default class Game {
@@ -59,10 +58,13 @@ export default class Game {
 
     this.gameStateHistory.push(judge.copyGameState(this.gameState));
 
-    grid[rowIndex][columnIndex] = this.getCurrentDiscColor();
-    this.flip(position, possibleMove.flipDirections);
+    grid[rowIndex][columnIndex] = judge.getCurrentDiscColor(
+      this.gameState.isCurrentPlayerBlack
+    );
+
+    this.gameState = this.flip(position, possibleMove.flipDirections);
     this.nextTurn();
-    return { ...this.gameState };
+    return this.gameState;
   };
 
   retract = (): Voidable<GameState> => {
@@ -77,7 +79,7 @@ export default class Game {
   private updatePossibleMoves = () => {
     this.gameState.possibleMoves = judge.getPossibleMoves(
       this.gameState.grid,
-      this.getCurrentPlayer()
+      judge.getCurrentPlayer(this.gameState.isCurrentPlayerBlack)
     );
   };
 
@@ -117,42 +119,10 @@ export default class Game {
     }
   };
 
-  private flip = (position: Position, flipDirection: FlipDirection[]) => {
-    for (let direction of flipDirection) {
-      const positionsToFlip = judge.positionsForDirection(
-        this.gameState.grid,
-        position,
-        direction
-      );
-
-      for (let positionToFlip of positionsToFlip) {
-        if (
-          this.gameState.grid[positionToFlip.rowIndex][
-            positionToFlip.columnIndex
-          ] !== this.getOpponentDiscColor()
-        ) {
-          break;
-        }
-
-        this.gameState.grid[positionToFlip.rowIndex][
-          positionToFlip.columnIndex
-        ] = this.getCurrentDiscColor();
-      }
-    }
+  private flip = (
+    position: Position,
+    flipDirections: FlipDirection[]
+  ): GameState => {
+    return judge.flip(this.gameState, position, flipDirections);
   };
-
-  private getCurrentDiscColor = (): SquareState => {
-    return this.gameState.isCurrentPlayerBlack
-      ? SquareState.black
-      : SquareState.white;
-  };
-
-  private getOpponentDiscColor = (): SquareState => {
-    return this.gameState.isCurrentPlayerBlack
-      ? SquareState.white
-      : SquareState.black;
-  };
-
-  private getCurrentPlayer = (): Player =>
-    this.gameState.isCurrentPlayerBlack ? Player.black : Player.white;
 }
