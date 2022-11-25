@@ -23,6 +23,9 @@ class Player {
 
   toString = (): string =>
     this.self() === Player.Black ? Player.BLACK_STRING : Player.WHITE_STRING;
+
+  isEqualTo = (player: Player): boolean =>
+    this.self().toString() === player.self().toString();
 }
 
 export default Player;

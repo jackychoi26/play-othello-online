@@ -8,6 +8,9 @@ import Game from '../models/Game';
 import GameState from '../models/GameState';
 import Position from '../models/Position';
 
+import Michelle from '../AI/Michelle';
+import Player from '../models/Player';
+
 const Container = styled.div`
   flex: 1;
   display: flex;
@@ -36,7 +39,9 @@ const UtilityButton = styled.button`
 const Home: NextPage = () => {
   // Don't need a state
   // TODO: remove it later
-  const [game, setGame] = useState<Game>(Game.create(8));
+  const [game, setGame] = useState<Game>(
+    Game.create(8, new Michelle(Player.White))
+  );
 
   const [gameState, setGameState] = useState<GameState>(
     game.currentGameState()
@@ -55,11 +60,19 @@ const Home: NextPage = () => {
   };
 
   const placeDisc = (position: Position) => {
-    const gameState = game.placeDisc(position);
+    let gameState = game.placeDisc(position);
 
     if (gameState !== undefined) {
       setGameState({ ...gameState });
     }
+
+    setTimeout(() => {
+      gameState = game.nextTurn();
+
+      if (gameState !== undefined) {
+        setGameState(gameState);
+      }
+    }, 1000);
   };
 
   const retract = () => {
@@ -76,7 +89,9 @@ const Home: NextPage = () => {
       <GameInfo>{gameScore()}</GameInfo>
       <Board gameState={gameState} placeDisc={placeDisc} />
       <UtilityButtonContainer>
-        <UtilityButton onClick={() => setGame(Game.create(8))}>
+        <UtilityButton
+          onClick={() => setGame(Game.create(8, new Michelle(Player.White)))}
+        >
           New Game
         </UtilityButton>
         <UtilityButton onClick={() => retract()}>Retract</UtilityButton>

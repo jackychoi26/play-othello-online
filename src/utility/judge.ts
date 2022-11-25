@@ -10,9 +10,9 @@ const placeDisc = (
   gameState: GameState,
   position: Position
 ): Voidable<GameState> => {
-  const newGameState = copyGameState(gameState);
+  const clonedGameState = copyGameState(gameState);
 
-  const possibleMove = newGameState.possibleMoves.find(element =>
+  const possibleMove = clonedGameState.possibleMoves.find(element =>
     element.position.isEqualTo(position)
   );
 
@@ -20,14 +20,19 @@ const placeDisc = (
 
   const rowIndex = position.rowIndex;
   const columnIndex = position.columnIndex;
-  const grid = newGameState.grid;
+  const grid = clonedGameState.grid;
   const square = grid[rowIndex][columnIndex];
   if (square !== SquareState.empty) return;
 
-  console.log(newGameState.player);
-  grid[rowIndex][columnIndex] = newGameState.player.selfDisc();
+  grid[rowIndex][columnIndex] = clonedGameState.player.selfDisc();
 
-  return flip(newGameState, position, possibleMove.flipDirections);
+  const newGameState = flip(
+    clonedGameState,
+    position,
+    possibleMove.flipDirections
+  );
+
+  return nextTurn(newGameState);
 };
 
 const flip = (
@@ -58,9 +63,25 @@ const flip = (
   return gameState;
 };
 
+const nextTurn = (gameState: GameState): Voidable<GameState> => {
+  gameState.player = gameState.player.opponent();
+  gameState.possibleMoves = getPossibleMoves(gameState.grid, gameState.player);
+  countDisc(gameState);
+
+  if (gameState.possibleMoves.length < 1) {
+    gameState.player = gameState.player.opponent();
+
+    if (getPossibleMoves(gameState.grid, gameState.player).length < 1) {
+      // GameOver
+    }
+  }
+
+  return gameState;
+};
+
 const isGameOver = (gameState: GameState): boolean => {
-  const blackMobility = getPossibleMoves(gameState.grid, Player.black);
-  const whiteMobility = getPossibleMoves(gameState.grid, Player.white);
+  const blackMobility = getPossibleMoves(gameState.grid, Player.Black);
+  const whiteMobility = getPossibleMoves(gameState.grid, Player.White);
   return blackMobility.length === 0 && whiteMobility.length === 0;
 };
 
@@ -101,7 +122,6 @@ const getAllEmptySquaresAdjacentToDisc = (
   for (let i = 0; i < boardSize; i++) {
     for (let j = 0; j < boardSize; j++) {
       if (grid[i]?.[j] !== SquareState.empty) {
-        // TODO: Count disc
         continue;
       }
 
@@ -474,6 +494,21 @@ const traverseTopLeft = (position: Position): Position[] => {
   }
 
   return topLeftPositions;
+};
+
+// Warning: could cause performance issue when scaled up to more than 8x8
+const countDisc = (gameState: GameState) => {
+  gameState.numberOfBlackDisc = 0;
+  gameState.numberOfWhiteDisc = 0;
+  for (let row of gameState.grid) {
+    for (let square of row) {
+      if (square === SquareState.black) {
+        gameState.numberOfBlackDisc++;
+      } else if (square === SquareState.white) {
+        gameState.numberOfWhiteDisc++;
+      }
+    }
+  }
 };
 
 export default {
