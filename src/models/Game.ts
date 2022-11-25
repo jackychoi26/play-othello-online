@@ -11,8 +11,8 @@ export default class Game {
 
   constructor(private gameState: GameState) {
     this.gameState.possibleMoves = judge.getPossibleMoves(
-      this.gameState.grid,
-      Player.black
+      gameState.grid,
+      gameState.player
     );
 
     this.countDisc();
@@ -36,35 +36,21 @@ export default class Game {
     column[4][3] = SquareState.black;
     column[3][4] = SquareState.black;
 
-    const game = new Game(new GameState(true, [], column, 2, 2));
+    const game = new Game(new GameState(Player.Black, [], column, 2, 2));
     return game;
   };
 
   currentGameState = (): GameState => ({ ...this.gameState });
 
   placeDisc = (position: Position): Voidable<GameState> => {
-    // Replace with customized function of find first
-    const possibleMove = this.gameState.possibleMoves.find(element =>
-      element.position.isEqualTo(position)
-    );
+    const newGameState = judge.placeDisc(this.gameState, position);
 
-    if (possibleMove === undefined) return;
-
-    const rowIndex = position.rowIndex;
-    const columnIndex = position.columnIndex;
-    const grid = this.gameState.grid;
-    const square = grid[rowIndex][columnIndex];
-    if (square !== SquareState.empty) return;
-
-    this.gameStateHistory.push(judge.copyGameState(this.gameState));
-
-    grid[rowIndex][columnIndex] = judge.getCurrentDiscColor(
-      this.gameState.isCurrentPlayerBlack
-    );
-
-    this.gameState = this.flip(position, possibleMove.flipDirections);
-    this.nextTurn();
-    return this.gameState;
+    if (newGameState !== undefined) {
+      this.gameStateHistory.push(judge.copyGameState(this.gameState));
+      this.gameState = newGameState;
+      this.nextTurn();
+      return this.gameState;
+    }
   };
 
   retract = (): Voidable<GameState> => {
@@ -79,7 +65,7 @@ export default class Game {
   private updatePossibleMoves = () => {
     this.gameState.possibleMoves = judge.getPossibleMoves(
       this.gameState.grid,
-      judge.getCurrentPlayer(this.gameState.isCurrentPlayerBlack)
+      this.gameState.player.self()
     );
   };
 
@@ -101,7 +87,7 @@ export default class Game {
   };
 
   private changeCurrentPlayer = () => {
-    this.gameState.isCurrentPlayerBlack = !this.gameState.isCurrentPlayerBlack;
+    this.gameState.player = this.gameState.player.opponent();
   };
 
   // Warning: potential performance issue when scale up to more than 8x8
@@ -117,12 +103,5 @@ export default class Game {
         }
       }
     }
-  };
-
-  private flip = (
-    position: Position,
-    flipDirections: FlipDirection[]
-  ): GameState => {
-    return judge.flip(this.gameState, position, flipDirections);
   };
 }

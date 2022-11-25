@@ -3,6 +3,7 @@ import { NextPage } from 'next';
 import styled from 'styled-components';
 
 import Board from '../components/Board';
+
 import Game from '../models/Game';
 import GameState from '../models/GameState';
 import Position from '../models/Position';
@@ -46,8 +47,7 @@ const Home: NextPage = () => {
   }, [game]);
 
   const gameStatusString = (): string => {
-    const playerString = gameState.isCurrentPlayerBlack ? 'black' : 'white';
-    return `This is ${playerString} player's turn`;
+    return `This is ${gameState.player.toString()} player's turn`;
   };
 
   const gameScore = (): string => {

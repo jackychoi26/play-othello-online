@@ -1,3 +1,4 @@
+import Voidable from '../common/Voidable';
 import FlipDirection from '../models/FlipDirection';
 import GameState from '../models/GameState';
 import Player from '../models/Player';
@@ -5,35 +6,56 @@ import Position from '../models/Position';
 import PossibleMove from '../models/PossibleMove';
 import SquareState from '../models/SquareState';
 
+const placeDisc = (
+  gameState: GameState,
+  position: Position
+): Voidable<GameState> => {
+  const newGameState = copyGameState(gameState);
+
+  const possibleMove = newGameState.possibleMoves.find(element =>
+    element.position.isEqualTo(position)
+  );
+
+  if (possibleMove === undefined) return;
+
+  const rowIndex = position.rowIndex;
+  const columnIndex = position.columnIndex;
+  const grid = newGameState.grid;
+  const square = grid[rowIndex][columnIndex];
+  if (square !== SquareState.empty) return;
+
+  console.log(newGameState.player);
+  grid[rowIndex][columnIndex] = newGameState.player.selfDisc();
+
+  return flip(newGameState, position, possibleMove.flipDirections);
+};
+
 const flip = (
   gameState: GameState,
   position: Position,
   flipDirections: FlipDirection[]
 ): GameState => {
-  const newGameState = copyGameState(gameState);
-
   for (let direction of flipDirections) {
     const positionsToFlip = positionsForDirection(
-      newGameState.grid,
+      gameState.grid,
       position,
       direction
     );
 
     for (let positionToFlip of positionsToFlip) {
       if (
-        newGameState.grid[positionToFlip.rowIndex][
-          positionToFlip.columnIndex
-        ] !== getOpponentDiscColor(newGameState.isCurrentPlayerBlack)
+        gameState.grid[positionToFlip.rowIndex][positionToFlip.columnIndex] !==
+        gameState.player.opponentDisc()
       ) {
         break;
       }
 
-      newGameState.grid[positionToFlip.rowIndex][positionToFlip.columnIndex] =
-        getCurrentDiscColor(newGameState.isCurrentPlayerBlack);
+      gameState.grid[positionToFlip.rowIndex][positionToFlip.columnIndex] =
+        gameState.player.selfDisc();
     }
   }
 
-  return newGameState;
+  return gameState;
 };
 
 const isGameOver = (gameState: GameState): boolean => {
@@ -62,7 +84,7 @@ const getPossibleMoves = (
 
 const copyGameState = (gameState: GameState): GameState => {
   return new GameState(
-    gameState.isCurrentPlayerBlack,
+    gameState.player,
     gameState.possibleMoves.slice(),
     gameState.grid.map(row => row.slice()),
     gameState.numberOfBlackDisc,
@@ -126,11 +148,8 @@ const canFlipHorizontally = (
 
   const flipDirection: FlipDirection[] = [];
 
-  let opponentDiscColor =
-    player === Player.black ? SquareState.white : SquareState.black;
-
-  let currentDiscColor =
-    player === Player.black ? SquareState.black : SquareState.white;
+  let opponentDiscColor = player.opponentDisc();
+  let currentDiscColor = player.selfDisc();
 
   if (row[columnIndex - 1] === opponentDiscColor) {
     const leftPositions = traverseLeft(new Position(rowIndex, columnIndex));
@@ -180,11 +199,8 @@ const canFlipVertically = (
 
   const flipDirection: FlipDirection[] = [];
 
-  let opponentDiscColor =
-    player === Player.black ? SquareState.white : SquareState.black;
-
-  let currentDiscColor =
-    player === Player.black ? SquareState.black : SquareState.white;
+  let opponentDiscColor = player.opponentDisc();
+  let currentDiscColor = player.selfDisc();
 
   if (grid[rowIndex - 1]?.[columnIndex] === opponentDiscColor) {
     const topPositions = traverseTop(new Position(rowIndex, columnIndex));
@@ -235,11 +251,8 @@ const canFlipDiagonally = (
 
   const flipDirection: FlipDirection[] = [];
 
-  let opponentDiscColor =
-    player === Player.black ? SquareState.white : SquareState.black;
-
-  let currentDiscColor =
-    player === Player.black ? SquareState.black : SquareState.white;
+  let opponentDiscColor = player.opponentDisc();
+  let currentDiscColor = player.selfDisc();
 
   // Top Left
   if (grid[rowIndex - 1]?.[columnIndex - 1] === opponentDiscColor) {
@@ -463,21 +476,10 @@ const traverseTopLeft = (position: Position): Position[] => {
   return topLeftPositions;
 };
 
-const getCurrentDiscColor = (isCurrentPlayerBlack: boolean): SquareState =>
-  isCurrentPlayerBlack ? SquareState.black : SquareState.white;
-
-const getOpponentDiscColor = (isCurrentPlayerBlack: boolean): SquareState =>
-  isCurrentPlayerBlack ? SquareState.white : SquareState.black;
-
-const getCurrentPlayer = (isCurrentPlayerBlack: boolean): Player =>
-  isCurrentPlayerBlack ? Player.black : Player.white;
-
 export default {
   getPossibleMoves,
   copyGameState,
   positionsForDirection,
   isGameOver,
-  flip,
-  getCurrentDiscColor,
-  getCurrentPlayer,
+  placeDisc,
 };
