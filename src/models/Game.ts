@@ -1,3 +1,4 @@
+import Voidable from '../common/Voidable';
 import FlipDirection from './FlipDirection';
 import GameState from './GameState';
 import Position from './Position';
@@ -37,7 +38,7 @@ export default class Game {
     return { ...this.gameState };
   };
 
-  placeDisc = (position: Position): GameState | undefined => {
+  placeDisc = (position: Position): Voidable<GameState> => {
     // Replace with customized function of find first
     const possibleMove = this.gameState.possibleMoves.find(element =>
       element.position.isEqualTo(position)
@@ -61,7 +62,7 @@ export default class Game {
 
   isCurrentPlayerBlack = (): boolean => this.gameState.isCurrentPlayerBlack;
 
-  retract = (): GameState | undefined => {
+  retract = (): Voidable<GameState> => {
     const lastGameState = this.gameStateHistory.pop();
 
     if (lastGameState !== undefined) {
@@ -70,7 +71,7 @@ export default class Game {
     }
   };
 
-  private gameOver = () => { };
+  private gameOver = () => {};
 
   private copyGameState = (gameState: GameState): GameState => {
     return new GameState(
@@ -377,7 +378,7 @@ export default class Game {
       for (let positionToFlip of positionsToFlip) {
         if (
           this.gameState.grid[positionToFlip.rowIndex][
-          positionToFlip.columnIndex
+            positionToFlip.columnIndex
           ] !== this.getOpponentPlayerColor()
         ) {
           break;
