@@ -23,10 +23,12 @@ export default class David implements AI {
       const newGameState = judge.placeDisc(gameState, move.position);
 
       if (newGameState !== undefined) {
-        const value = this.minimax(newGameState, 5, false, this.evaluation);
+        const value = this.minimax(newGameState, 4, false, this.evaluation);
         results.push(new MinimaxResult(move.position, value));
       }
     }
+
+    if (results.length < 1) return;
 
     const resultWithHighestValue = results.reduce((prev, current) => {
       if (prev.value === current.value) {
