@@ -1,11 +1,10 @@
-import Michelle from '../AI/Michelle';
 import Voidable from '../common/Voidable';
 import judge from '../utility/judge';
 import GameState from './GameState';
 import Player from './Player';
 import Position from './Position';
 import SquareState from './SquareState';
-import CanThink from '../AI/CanThink';
+import CanThink from '../AI/AI';
 
 export default class Game {
   private gameStateHistory: GameState[] = [];

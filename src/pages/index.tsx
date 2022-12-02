@@ -40,7 +40,7 @@ const Home: NextPage = () => {
   // Don't need a state
   // TODO: remove it later
   const [game, setGame] = useState<Game>(
-    Game.create(8, new Michelle(Player.White))
+    Game.create(8, Michelle.create(Player.White))
   );
 
   const [gameState, setGameState] = useState<GameState>(
@@ -90,7 +90,7 @@ const Home: NextPage = () => {
       <Board gameState={gameState} placeDisc={placeDisc} />
       <UtilityButtonContainer>
         <UtilityButton
-          onClick={() => setGame(Game.create(8, new Michelle(Player.White)))}
+          onClick={() => setGame(Game.create(8, Michelle.create(Player.White)))}
         >
           New Game
         </UtilityButton>
