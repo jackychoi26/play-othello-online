@@ -23,7 +23,15 @@ export default class David implements AI {
       const newGameState = judge.placeDisc(gameState, move.position);
 
       if (newGameState !== undefined) {
-        const value = this.minimax(newGameState, 4, false, this.evaluation);
+        const value = this.minimax(
+          newGameState,
+          6,
+          false,
+          this.evaluation,
+          0,
+          0
+        );
+
         results.push(new MinimaxResult(move.position, value));
       }
     }
@@ -40,11 +48,14 @@ export default class David implements AI {
 
     return resultWithHighestValue.position;
   }
-  minimax = (
+
+  private minimax = (
     gameState: GameState,
     depth: number,
     isMaximizingPlayer: boolean,
-    evaluation: (gameState: GameState) => number
+    evaluation: (gameState: GameState) => number,
+    alpha: number,
+    beta: number
   ): number => {
     if (depth === 0 || judge.isGameOver(gameState)) {
       return evaluation(gameState);
@@ -64,9 +75,14 @@ export default class David implements AI {
             newGameState,
             depth - 1,
             !isMaximizingPlayer,
-            evaluation
+            evaluation,
+            maxValue,
+            beta
           );
+
           maxValue = Math.max(childrenValue, maxValue);
+          const alphaValue = Math.max(alpha, childrenValue);
+          if (alphaValue >= beta) break;
         } else {
           console.error('❌ Unexpected Error in David.ts');
         }
@@ -87,9 +103,14 @@ export default class David implements AI {
             newGameState,
             depth - 1,
             !isMaximizingPlayer,
-            evaluation
+            evaluation,
+            alpha,
+            minValue
           );
+
           minValue = Math.min(childrenValue, minValue);
+          const betaValue = Math.min(beta, childrenValue);
+          if (betaValue <= alpha) break;
         } else {
           console.error('❌ Unexpected Error in David.ts');
         }
