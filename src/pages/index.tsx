@@ -83,16 +83,20 @@ const Home: NextPage = () => {
     let gameState = game.placeDisc(position);
 
     if (gameState !== undefined) {
-      setGameState({ ...gameState });
+      setGameState(gameState);
     }
 
-    setTimeout(() => {
-      const newGameState = game.nextTurn();
+    const newGameStates = game.nextTurn();
+    displayAIMoves(newGameStates, 0);
+  };
 
-      if (newGameState !== undefined) {
-        setGameState(newGameState);
-      }
-    }, 1000);
+  const displayAIMoves = (gameStates: GameState[], i: number) => {
+    if (gameStates.length > i) {
+      setTimeout(() => {
+        setGameState(gameStates[i]);
+        displayAIMoves(gameStates, i + 1);
+      }, 1000);
+    }
   };
 
   const retract = () => {

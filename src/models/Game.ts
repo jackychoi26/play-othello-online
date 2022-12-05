@@ -65,9 +65,35 @@ export default class Game {
     }
   };
 
-  nextTurn = (): Voidable<GameState> => {
-    if (!this.isAIturn()) return;
-    const position = this.whiteAI?.think(judge.copyGameState(this.gameState));
+  nextTurn = (): GameState[] => {
+    if (!this.isAIturn()) return [];
+
+    const gameStates: GameState[] = [];
+    const turn = this.gameState.player;
+    let gameState = this._thinkIfAIPresent();
+
+    if (gameState !== undefined) {
+      gameStates.push(gameState);
+      while (gameState?.player?.isEqualTo(turn)) {
+        gameState = this._thinkIfAIPresent();
+
+        if (gameState !== undefined) {
+          gameStates.push(gameState);
+        }
+      }
+    }
+
+    return gameStates;
+  };
+
+  private _thinkIfAIPresent = (): Voidable<GameState> => {
+    let position: Voidable<Position>;
+
+    if (this.gameState.player === Player.White) {
+      position = this.whiteAI?.think(this.gameState);
+    } else if (this.gameState.player === Player.Black) {
+      position = this.blackAI?.think(this.gameState);
+    }
 
     if (position !== undefined) {
       return this._placeDisc(position, false);
