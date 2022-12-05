@@ -70,9 +70,13 @@ const nextTurn = (gameState: GameState): Voidable<GameState> => {
 
   if (gameState.possibleMoves.length < 1) {
     gameState.player = gameState.player.opponent();
+    gameState.possibleMoves = getPossibleMoves(
+      gameState.grid,
+      gameState.player
+    );
 
-    if (getPossibleMoves(gameState.grid, gameState.player).length < 1) {
-      // GameOver
+    if (gameState.possibleMoves.length < 1) {
+      gameState.isGameOver = true;
     }
   }
 
@@ -105,6 +109,7 @@ const getPossibleMoves = (
 
 const copyGameState = (gameState: GameState): GameState => {
   return new GameState(
+    gameState.isGameOver,
     gameState.player,
     gameState.possibleMoves.slice(),
     gameState.grid.map(row => row.slice()),

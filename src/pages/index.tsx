@@ -51,8 +51,28 @@ const Home: NextPage = () => {
     setGameState(game.currentGameState());
   }, [game]);
 
+  useEffect(() => {
+    if (gameState.isGameOver) {
+      alert('Game over');
+    }
+  }, [gameState]);
+
   const gameStatusString = (): string => {
-    return `This is ${gameState.player.toString()} player's turn`;
+    if (gameState.isGameOver) {
+      return winnerString();
+    } else {
+      return `This is ${gameState.player.toString()} player's turn`;
+    }
+  };
+
+  const winnerString = (): string => {
+    if (gameState.numberOfBlackDisc - gameState.numberOfWhiteDisc > 0) {
+      return `Black is the winner`;
+    } else if (gameState.numberOfBlackDisc - gameState.numberOfWhiteDisc < 0) {
+      return `White is the winner`;
+    } else {
+      return `It's a draw`;
+    }
   };
 
   const gameScore = (): string => {
@@ -66,13 +86,13 @@ const Home: NextPage = () => {
       setGameState({ ...gameState });
     }
 
-    setTimeout(() => {
-      gameState = game.nextTurn();
+    // setTimeout(() => {
+    const newGameState = game.nextTurn();
 
-      if (gameState !== undefined) {
-        setGameState(gameState);
-      }
-    }, 1000);
+    if (newGameState !== undefined) {
+      setGameState(newGameState);
+    }
+    // }, 1000);
   };
 
   const retract = () => {

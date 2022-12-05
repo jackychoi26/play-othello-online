@@ -34,13 +34,17 @@ export default class Game {
     column[4][3] = SquareState.black;
     column[3][4] = SquareState.black;
 
-    const game = new Game(new GameState(Player.Black, [], column, 2, 2), ai);
+    const game = new Game(
+      new GameState(false, Player.Black, [], column, 2, 2),
+      ai
+    );
     return game;
   };
 
   currentGameState = (): GameState => ({ ...this.gameState });
 
   placeDisc = (position: Position): Voidable<GameState> => {
+    // if (this.gameState)
     const newGameState = judge.placeDisc(this.gameState, position);
 
     if (newGameState !== undefined) {

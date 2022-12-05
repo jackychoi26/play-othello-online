@@ -4,6 +4,7 @@ import SquareState from './SquareState';
 
 export default class GameState {
   constructor(
+    public isGameOver: boolean,
     public player: Player,
     public possibleMoves: PossibleMove[],
     public grid: SquareState[][],
