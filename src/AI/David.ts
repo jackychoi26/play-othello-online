@@ -25,7 +25,7 @@ export default class David implements AI {
       if (newGameState !== undefined) {
         const value = this.minimax(
           newGameState,
-          6,
+          3,
           false,
           this.evaluation,
           0,
@@ -74,7 +74,7 @@ export default class David implements AI {
           const childrenValue = this.minimax(
             newGameState,
             depth - 1,
-            !isMaximizingPlayer,
+            newGameState.player.isEqualTo(this.player),
             evaluation,
             maxValue,
             beta
@@ -84,7 +84,7 @@ export default class David implements AI {
           const alphaValue = Math.max(alpha, childrenValue);
           if (alphaValue >= beta) break;
         } else {
-          console.error('❌ Unexpected Error in David.ts');
+          console.error('❌ Unexpected Error in David.ts', gameState, move);
         }
       }
 
@@ -102,7 +102,7 @@ export default class David implements AI {
           const childrenValue = this.minimax(
             newGameState,
             depth - 1,
-            !isMaximizingPlayer,
+            !newGameState.player.isEqualTo(this.player),
             evaluation,
             alpha,
             minValue
@@ -112,7 +112,7 @@ export default class David implements AI {
           const betaValue = Math.min(beta, childrenValue);
           if (betaValue <= alpha) break;
         } else {
-          console.error('❌ Unexpected Error in David.ts');
+          console.error('❌ Unexpected Error in David.ts', gameState, move);
         }
       }
 
