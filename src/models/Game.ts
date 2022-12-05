@@ -44,7 +44,6 @@ export default class Game {
   currentGameState = (): GameState => ({ ...this.gameState });
 
   placeDisc = (position: Position): Voidable<GameState> => {
-    // if (this.gameState)
     const newGameState = judge.placeDisc(this.gameState, position);
 
     if (newGameState !== undefined) {
