@@ -27,7 +27,6 @@ export default class Joi extends David {
       let weightsDifference = 0;
 
       gameState.grid.forEach((row: SquareState[], rowIndex: number) => {
-        console.log('Joi is working...');
         row.forEach((square: SquareState, columnIndex: number) => {
           if (square === SquareState.black) {
             weightsDifference + this.staticWeightsBoard[rowIndex][columnIndex];
