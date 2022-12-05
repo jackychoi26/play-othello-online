@@ -10,6 +10,7 @@ import Position from '../models/Position';
 
 import Michelle from '../AI/Michelle';
 import Player from '../models/Player';
+import Joi from '../AI/Joi';
 
 const Container = styled.div`
   flex: 1;
@@ -40,7 +41,7 @@ const Home: NextPage = () => {
   // Don't need a state
   // TODO: remove it later
   const [game, setGame] = useState<Game>(
-    Game.create(8, Michelle.create(Player.White))
+    Game.create(8, Joi.create(Player.White))
   );
 
   const [gameState, setGameState] = useState<GameState>(
