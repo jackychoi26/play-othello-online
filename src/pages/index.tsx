@@ -84,13 +84,13 @@ const Home: NextPage = () => {
 
     if (newGameState !== undefined) {
       setGameState({ ...newGameState });
-    }
 
-    // Without the slight timeout, the setGameState above will be stuck in event loop and causes very poor UX
-    setTimeout(() => {
-      const newGameStates = game.nextTurn();
-      displayAIMoves(newGameStates, 0);
-    }, 100);
+      // Without the slight timeout, the setGameState above will be stuck in event loop and causes very poor UX
+      setTimeout(() => {
+        const newGameStates = game.nextTurn();
+        displayAIMoves(newGameStates, 0);
+      }, 100);
+    }
   };
 
   const displayAIMoves = (gameStates: GameState[], i: number) => {
