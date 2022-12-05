@@ -9,14 +9,22 @@ import CanThink from '../AI/AI';
 export default class Game {
   private gameStateHistory: GameState[] = [];
 
-  constructor(private gameState: GameState, private ai: Voidable<CanThink>) {
+  constructor(
+    private gameState: GameState,
+    private whiteAI: Voidable<CanThink>,
+    private blackAI: Voidable<CanThink>
+  ) {
     this.gameState.possibleMoves = judge.getPossibleMoves(
       gameState.grid,
       gameState.player
     );
   }
 
-  static create = (size: number, ai: Voidable<CanThink>): Game => {
+  static create = (
+    size: number,
+    whiteAI: Voidable<CanThink>,
+    blackAI: Voidable<CanThink>
+  ): Game => {
     const row: SquareState[] = [];
     let column: SquareState[][] = [];
 
@@ -36,7 +44,8 @@ export default class Game {
 
     const game = new Game(
       new GameState(false, Player.Black, [], column, 2, 2),
-      ai
+      whiteAI,
+      blackAI
     );
     return game;
   };
@@ -44,13 +53,7 @@ export default class Game {
   currentGameState = (): GameState => ({ ...this.gameState });
 
   placeDisc = (position: Position): Voidable<GameState> => {
-    const newGameState = judge.placeDisc(this.gameState, position);
-
-    if (newGameState !== undefined) {
-      this.gameStateHistory.push(judge.copyGameState(this.gameState));
-      this.gameState = newGameState;
-      return this.gameState;
-    }
+    return this._placeDisc(position, true);
   };
 
   retract = (): Voidable<GameState> => {
@@ -62,13 +65,32 @@ export default class Game {
     }
   };
 
-  private gameOver = () => {};
-
   nextTurn = (): Voidable<GameState> => {
-    const position = this.ai?.think(judge.copyGameState(this.gameState));
+    if (!this.isAIturn()) return;
+    const position = this.whiteAI?.think(judge.copyGameState(this.gameState));
 
     if (position !== undefined) {
-      return this.placeDisc(position);
+      return this._placeDisc(position, false);
     }
+  };
+
+  private _placeDisc = (
+    position: Position,
+    isPlayerInteraction: boolean
+  ): Voidable<GameState> => {
+    if (isPlayerInteraction && this.isAIturn()) return;
+    const newGameState = judge.placeDisc(this.gameState, position);
+
+    if (newGameState !== undefined) {
+      this.gameStateHistory.push(judge.copyGameState(this.gameState));
+      this.gameState = newGameState;
+      return this.gameState;
+    }
+  };
+
+  private isAIturn = (): boolean => {
+    if (this.gameState.player === Player.White && this.whiteAI) return true;
+    if (this.gameState.player === Player.Black && this.blackAI) return true;
+    return false;
   };
 }
