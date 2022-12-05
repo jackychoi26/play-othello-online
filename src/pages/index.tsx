@@ -86,11 +86,13 @@ const Home: NextPage = () => {
       setGameState({ ...gameState });
     }
 
-    const newGameState = game.nextTurn();
+    setTimeout(() => {
+      const newGameState = game.nextTurn();
 
-    if (newGameState !== undefined) {
-      setGameState(newGameState);
-    }
+      if (newGameState !== undefined) {
+        setGameState(newGameState);
+      }
+    }, 1000);
   };
 
   const retract = () => {
