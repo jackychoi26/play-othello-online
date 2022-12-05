@@ -26,7 +26,7 @@ export default class David implements AI {
       if (newGameState !== undefined) {
         const value = this.minimax(
           newGameState,
-          6,
+          5,
           false,
           this.evaluation,
           0,

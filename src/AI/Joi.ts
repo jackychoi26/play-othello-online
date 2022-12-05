@@ -29,14 +29,14 @@ export default class Joi extends David {
       gameState.grid.forEach((row: SquareState[], rowIndex: number) => {
         row.forEach((square: SquareState, columnIndex: number) => {
           if (square === SquareState.black) {
-            weightsDifference + this.staticWeightsBoard[rowIndex][columnIndex];
+            weightsDifference = -this.staticWeightsBoard[rowIndex][columnIndex];
           } else if (square === SquareState.white) {
-            weightsDifference - this.staticWeightsBoard[rowIndex][columnIndex];
+            weightsDifference = -this.staticWeightsBoard[rowIndex][columnIndex];
           }
         });
       });
 
-      return weightsDifference;
+      return player === Player.Black ? weightsDifference : -weightsDifference;
     };
 
     return new this(player, staticWeightsEvaluation);
