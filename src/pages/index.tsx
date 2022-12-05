@@ -48,6 +48,8 @@ const Home: NextPage = () => {
     game.currentGameState()
   );
 
+  const [canPlaceDisc, setCanPlaceDisc] = useState(true);
+
   useEffect(() => {
     setGameState(game.currentGameState());
   }, [game]);
@@ -81,10 +83,12 @@ const Home: NextPage = () => {
   };
 
   const placeDisc = (position: Position) => {
+    if (!canPlaceDisc) return;
     let newGameState = game.placeDisc(position);
 
     if (newGameState !== undefined) {
       setGameState({ ...newGameState });
+      setCanPlaceDisc(false);
 
       // Without the slight timeout, the setGameState above will be stuck in event loop and causes very poor UX
       setTimeout(() => {
@@ -100,6 +104,8 @@ const Home: NextPage = () => {
         setGameState(gameStates[i]);
         displayAIMoves(gameStates, i + 1);
       }, 1000);
+    } else {
+      setCanPlaceDisc(true);
     }
   };
 
