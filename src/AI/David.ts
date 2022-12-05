@@ -19,13 +19,14 @@ export default class David implements AI {
     if (!gameState.player.isEqualTo(this.player)) return;
     const results: MinimaxResult[] = [];
 
+    // TODO: try to eliminate the for loop outside
     for (let move of gameState.possibleMoves) {
       const newGameState = judge.placeDisc(gameState, move.position);
 
       if (newGameState !== undefined) {
         const value = this.minimax(
           newGameState,
-          3,
+          6,
           false,
           this.evaluation,
           0,
