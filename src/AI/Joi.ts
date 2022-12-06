@@ -22,6 +22,7 @@ export default class Joi extends David {
     super(player, evaluation);
   }
 
+  // Capture corner
   static create = (player: Player): Joi => {
     const staticWeightsEvaluation = (gameState: GameState): number => {
       let weightsDifference = 0;

@@ -20,11 +20,6 @@ export default class Rachael extends David {
         player.opponent()
       );
 
-      console.log(
-        playerMobility.length - opponentMobility.length,
-        gameState.grid
-      );
-
       return playerMobility.length - opponentMobility.length;
     };
 
