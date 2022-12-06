@@ -65,7 +65,9 @@ const Home: NextPage = () => {
     if (gameState.isGameOver) {
       return winnerString();
     } else {
-      return `This is ${gameState.player.toString()} player's turn`;
+      return `This is ${gameState.player.toString()} player's turn. ${
+        gameState.remainingEmptySquare
+      } squares left.`;
     }
   };
 

@@ -114,7 +114,8 @@ const copyGameState = (gameState: GameState): GameState => {
     gameState.possibleMoves.slice(),
     gameState.grid.map(row => row.slice()),
     gameState.numberOfBlackDisc,
-    gameState.numberOfWhiteDisc
+    gameState.numberOfWhiteDisc,
+    gameState.remainingEmptySquare
   );
 };
 
