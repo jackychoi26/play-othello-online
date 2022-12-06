@@ -30,7 +30,8 @@ export default class David implements AI {
           false,
           this.evaluation,
           0,
-          0
+          0,
+          15
         );
 
         results.push(new MinimaxResult(move.position, value));
@@ -56,10 +57,13 @@ export default class David implements AI {
     isMaximizingPlayer: boolean,
     evaluation: (gameState: GameState) => number,
     alpha: number,
-    beta: number
+    beta: number,
+    bruteForceCutOff: number = -this.INFINITY
   ): number => {
-    if (depth === 0 || judge.isGameOver(gameState)) {
-      return evaluation(gameState);
+    if (gameState.remainingEmptySquare >= bruteForceCutOff) {
+      if (depth === 0 || judge.isGameOver(gameState)) {
+        return evaluation(gameState);
+      }
     }
 
     if (isMaximizingPlayer) {
@@ -78,7 +82,8 @@ export default class David implements AI {
             newGameState.player.isEqualTo(this.player),
             evaluation,
             maxValue,
-            beta
+            beta,
+            bruteForceCutOff
           );
 
           maxValue = Math.max(childrenValue, maxValue);
@@ -106,7 +111,8 @@ export default class David implements AI {
             !newGameState.player.isEqualTo(this.player),
             evaluation,
             alpha,
-            minValue
+            minValue,
+            bruteForceCutOff
           );
 
           minValue = Math.min(childrenValue, minValue);
