@@ -3,6 +3,7 @@ import GameState from '../models/GameState';
 import Player from '../models/Player';
 import Position from '../models/Position';
 import SquareState from '../models/SquareState';
+import judge from '../utility/judge';
 import David from './David';
 
 export default class Luv extends David {
@@ -40,10 +41,18 @@ export default class Luv extends David {
         return accumulator + value;
       }, 0);
 
-      const discDifference =
-        gameState.numberOfBlackDisc - gameState.numberOfWhiteDisc;
+      const playerMobility = judge.getPossibleMoves(
+        gameState.grid,
+        player
+      ).length;
 
-      const finalValue = cornersDifference + discDifference;
+      const opponentMobility = judge.getPossibleMoves(
+        gameState.grid,
+        player.opponent()
+      ).length;
+
+      const mobilityDifference = playerMobility - opponentMobility;
+      const finalValue = cornersDifference + mobilityDifference;
       return player === Player.Black ? finalValue : -finalValue;
     };
 
