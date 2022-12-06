@@ -9,6 +9,7 @@ export default class GameState {
     public possibleMoves: PossibleMove[],
     public grid: SquareState[][],
     public numberOfBlackDisc: number,
-    public numberOfWhiteDisc: number
+    public numberOfWhiteDisc: number,
+    public remainingEmptySquare: number
   ) {}
 }

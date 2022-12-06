@@ -43,7 +43,7 @@ export default class Game {
     column[3][4] = SquareState.black;
 
     const game = new Game(
-      new GameState(false, Player.Black, [], column, 2, 2),
+      new GameState(false, Player.Black, [], column, 2, 2, size * size - 4),
       whiteAI,
       blackAI
     );
@@ -108,6 +108,7 @@ export default class Game {
     const newGameState = judge.placeDisc(this.gameState, position);
 
     if (newGameState !== undefined) {
+      newGameState.remainingEmptySquare -= 1;
       this.gameStateHistory.push(judge.copyGameState(this.gameState));
       this.gameState = newGameState;
       return this.gameState;
