@@ -12,6 +12,7 @@ import Michelle from '../AI/Michelle';
 import Player from '../models/Player';
 import Joi from '../AI/Joi';
 import Rachael from '../AI/Rachael';
+import Luv from '../AI/Luv';
 
 const Container = styled.div`
   flex: 1;
