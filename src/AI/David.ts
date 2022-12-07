@@ -60,8 +60,10 @@ export default class David implements AI {
     beta: number,
     bruteForceCutOff: number = -this.INFINITY
   ): number => {
-    if (gameState.remainingEmptySquare >= bruteForceCutOff) {
-      if (depth === 0 || judge.isGameOver(gameState)) {
+    const shouldBruteForce = bruteForceCutOff >= gameState.remainingEmptySquare;
+
+    if (!shouldBruteForce) {
+      if (depth < 1 || judge.isGameOver(gameState)) {
         return evaluation(gameState);
       }
     }
@@ -80,7 +82,7 @@ export default class David implements AI {
             newGameState,
             depth - 1,
             newGameState.player.isEqualTo(this.player),
-            evaluation,
+            shouldBruteForce ? this.coinParity : evaluation,
             maxValue,
             beta,
             bruteForceCutOff
@@ -109,7 +111,7 @@ export default class David implements AI {
             newGameState,
             depth - 1,
             !newGameState.player.isEqualTo(this.player),
-            evaluation,
+            shouldBruteForce ? this.coinParity : evaluation,
             alpha,
             minValue,
             bruteForceCutOff
@@ -124,6 +126,18 @@ export default class David implements AI {
       }
 
       return minValue;
+    }
+  };
+
+  // Code smell
+  private coinParity = (gameState: GameState): number => {
+    const discDifference =
+      gameState.numberOfBlackDisc - gameState.numberOfWhiteDisc;
+
+    if (this.player === Player.Black) {
+      return discDifference;
+    } else {
+      return -discDifference;
     }
   };
 }
