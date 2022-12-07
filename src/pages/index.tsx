@@ -120,6 +120,7 @@ const Home: NextPage = () => {
 
   return (
     <Container>
+      <meta name="viewport" content="width=1024" />
       <GameInfo>{gameStatusString()}</GameInfo>
       <GameInfo>{gameScore()}</GameInfo>
       <Board gameState={gameState} placeDisc={placeDisc} />
