@@ -8,7 +8,6 @@ import Game from '../models/Game';
 import GameState from '../models/GameState';
 import Position from '../models/Position';
 
-import Michelle from '../AI/Michelle';
 import Player from '../models/Player';
 import Luv from '../AI/Luv';
 
@@ -126,7 +125,7 @@ const Home: NextPage = () => {
       <Board gameState={gameState} placeDisc={placeDisc} />
       <UtilityButtonContainer>
         <UtilityButton
-          onClick={() => setGame(Game.create(8, Michelle.create(Player.White)))}
+          onClick={() => setGame(Game.create(8, Luv.create(Player.White)))}
         >
           New Game
         </UtilityButton>
