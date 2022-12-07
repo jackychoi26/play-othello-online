@@ -33,12 +33,14 @@ export default class Luv extends David {
       };
 
       const cornersDifference = corners.reduce((accumulator, currentValue) => {
-        const value =
-          cornerOwner(gameState.grid, currentValue) === Player.Black
-            ? 999
-            : -999;
+        const player = cornerOwner(gameState.grid, currentValue);
 
-        return accumulator + value;
+        if (player !== undefined) {
+          const value = player === Player.Black ? 999 : -999;
+          return accumulator + value;
+        } else {
+          return accumulator;
+        }
       }, 0);
 
       const playerMobility = judge.getPossibleMoves(
