@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import styled from 'styled-components';
+import Select from 'react-select';
 
 import Board from '../components/Board';
 
@@ -10,6 +11,10 @@ import Position from '../models/Position';
 
 import Player from '../models/Player';
 import Luv from '../AI/Luv';
+import Michelle from '../AI/Michelle';
+import Joi from '../AI/Joi';
+import Rachael from '../AI/Rachael';
+import AI from '../AI/AI';
 
 const Container = styled.div`
   flex: 1;
@@ -39,15 +44,20 @@ const UtilityButton = styled.button`
 const Home: NextPage = () => {
   // Don't need a state
   // TODO: remove it later
-  const [game, setGame] = useState<Game>(
-    Game.create(8, Luv.create(Player.White))
-  );
+  const aiOptions = [
+    { value: Luv.create(Player.White), label: Luv.name },
+    { value: Michelle.create(Player.White), label: Michelle.name },
+    { value: Joi.create(Player.White), label: Joi.name },
+    { value: Rachael.create(Player.White), label: Rachael.name },
+  ];
+
+  const [currentAI, setCurrentAI] = useState<AI>(aiOptions[0].value);
+  const [game, setGame] = useState<Game>(Game.create(8, currentAI));
+  const [canPlaceDisc, setCanPlaceDisc] = useState(true);
 
   const [gameState, setGameState] = useState<GameState>(
     game.currentGameState()
   );
-
-  const [canPlaceDisc, setCanPlaceDisc] = useState(true);
 
   useEffect(() => {
     setGameState(game.currentGameState());
@@ -66,6 +76,20 @@ const Home: NextPage = () => {
       return `This is ${gameState.player.toString()} player's turn. ${
         gameState.remainingEmptySquare
       } squares left.`;
+    }
+  };
+
+  const opponentInformation = (): string => {
+    if (currentAI instanceof Joi) {
+      return `${Joi.name}: ${Joi.description}`;
+    } else if (currentAI instanceof Luv) {
+      return `${Luv.name}: ${Luv.description}`;
+    } else if (currentAI instanceof Rachael) {
+      return `${Rachael.name}: ${Rachael.description}`;
+    } else if (currentAI instanceof Michelle) {
+      return `${Michelle.name}: ${Michelle.description}`;
+    } else {
+      return '';
     }
   };
 
@@ -121,16 +145,30 @@ const Home: NextPage = () => {
   return (
     <Container>
       <meta name="viewport" content="width=1024" />
+      <GameInfo>{opponentInformation()}</GameInfo>
       <GameInfo>{gameStatusString()}</GameInfo>
       <GameInfo>{gameScore()}</GameInfo>
       <Board gameState={gameState} placeDisc={placeDisc} />
       <UtilityButtonContainer>
-        <UtilityButton
-          onClick={() => setGame(Game.create(8, Luv.create(Player.White)))}
-        >
+        <UtilityButton onClick={() => setGame(Game.create(8, currentAI))}>
           New Game
         </UtilityButton>
         <UtilityButton onClick={() => retract()}>Retract</UtilityButton>
+        <Select
+          className="basic-single"
+          classNamePrefix="select"
+          defaultValue={aiOptions[0]}
+          isDisabled={false}
+          isLoading={false}
+          isClearable={false}
+          onChange={option => {
+            setCurrentAI(option?.value ?? aiOptions[0].value);
+            setGame(Game.create(8, option?.value ?? currentAI));
+          }}
+          isSearchable={false}
+          name="color"
+          options={aiOptions}
+        />
       </UtilityButtonContainer>
     </Container>
   );

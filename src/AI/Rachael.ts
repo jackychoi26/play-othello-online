@@ -4,6 +4,8 @@ import judge from '../utility/judge';
 import David from './David';
 
 export default class Rachael extends David {
+  static description = 'Evaluate on mobility';
+
   private constructor(
     player: Player,
     evaluation: (gameState: GameState) => number

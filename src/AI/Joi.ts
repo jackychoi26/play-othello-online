@@ -4,15 +4,17 @@ import SquareState from '../models/SquareState';
 import David from './David';
 
 export default class Joi extends David {
+  static description = 'Static weight board';
+
   static staticWeightsBoard = [
-    [4, -3, 2, 2, 2, 2, -3, 4],
+    [12, -3, 2, 2, 2, 2, -3, 12],
     [-3, -4, -1, -1, -1, -1, -4, -3],
     [2, -1, 1, 0, 0, 1, -1, 2],
     [2, -1, 0, 1, 1, 0, -1, 2],
     [2, -1, 0, 1, 1, 0, -1, 2],
     [2, -1, 1, 0, 0, 1, -1, 2],
     [-3, -4, -1, -1, -1, -1, -4, -3],
-    [4, -3, 2, 2, 2, 2, -3, 4],
+    [12, -3, 2, 2, 2, 2, -3, 12],
   ];
 
   private constructor(

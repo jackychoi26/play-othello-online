@@ -3,6 +3,8 @@ import Player from '../models/Player';
 import David from './David';
 
 export default class Michelle extends David {
+  static description = 'Michelle, Disc parity';
+
   private constructor(
     player: Player,
     evaluation: (gameState: GameState) => number
