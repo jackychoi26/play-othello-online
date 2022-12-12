@@ -7,7 +7,7 @@ import judge from '../utility/judge';
 import David from './David';
 
 export default class Luv extends David {
-  static description = 'Mixture of corner capture and mobility';
+  static description = 'Corner capture and mobility';
 
   private constructor(
     player: Player,
