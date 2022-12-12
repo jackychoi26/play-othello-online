@@ -144,15 +144,15 @@ const Home: NextPage = () => {
   };
 
   const customStyles = {
-    option: provided => ({
+    option: (provided: any) => ({
       ...provided,
       color: 'black',
     }),
-    control: provided => ({
+    control: (provided: any) => ({
       ...provided,
       color: 'black',
     }),
-    singleValue: provided => ({
+    singleValue: (provided: any) => ({
       ...provided,
       color: 'black',
     }),
