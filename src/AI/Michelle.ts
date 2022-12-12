@@ -3,7 +3,7 @@ import Player from '../models/Player';
 import David from './David';
 
 export default class Michelle extends David {
-  static description = 'Joi: Disc parity';
+  static description = 'Michelle: Disc parity';
 
   private constructor(
     player: Player,
