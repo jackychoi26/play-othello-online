@@ -41,10 +41,15 @@ const UtilityButton = styled.button`
   margin: 20px;
 `;
 
+interface AIOption {
+  value: AI;
+  label: string;
+}
+
 const Home: NextPage = () => {
   // Don't need a state
   // TODO: remove it later
-  const aiOptions = [
+  const aiOptions: AIOption[] = [
     { value: Luv.create(Player.White), label: Luv.name },
     { value: Michelle.create(Player.White), label: Michelle.name },
     { value: Joi.create(Player.White), label: Joi.name },
