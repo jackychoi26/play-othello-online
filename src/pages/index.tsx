@@ -22,8 +22,10 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
+  margin-top: 50px;
+  margin-bottom: 200px;
 `;
 
 const GameInfo = styled.p`
@@ -50,10 +52,10 @@ const Home: NextPage = () => {
   // Don't need a state
   // TODO: remove it later
   const aiOptions: AIOption[] = [
-    { value: Luv.create(Player.White), label: Luv.name },
-    { value: Michelle.create(Player.White), label: Michelle.name },
-    { value: Joi.create(Player.White), label: Joi.name },
-    { value: Rachael.create(Player.White), label: Rachael.name },
+    { value: Luv.create(Player.White), label: Luv.description },
+    { value: Michelle.create(Player.White), label: Michelle.description },
+    { value: Joi.create(Player.White), label: Joi.description },
+    { value: Rachael.create(Player.White), label: Rachael.description },
   ];
 
   const [currentAI, setCurrentAI] = useState<AI>(aiOptions[0].value);
@@ -85,17 +87,11 @@ const Home: NextPage = () => {
   };
 
   const opponentInformation = (): string => {
-    if (currentAI instanceof Joi) {
-      return `${Joi.name}: ${Joi.description}`;
-    } else if (currentAI instanceof Luv) {
-      return `${Luv.name}: ${Luv.description}`;
-    } else if (currentAI instanceof Rachael) {
-      return `${Rachael.name}: ${Rachael.description}`;
-    } else if (currentAI instanceof Michelle) {
-      return `${Michelle.name}: ${Michelle.description}`;
-    } else {
-      return '';
-    }
+    if (currentAI instanceof Joi) return Joi.description;
+    if (currentAI instanceof Luv) return Luv.description;
+    if (currentAI instanceof Rachael) return Rachael.description;
+    if (currentAI instanceof Michelle) return Michelle.description;
+    return '';
   };
 
   const winnerString = (): string => {
@@ -147,6 +143,21 @@ const Home: NextPage = () => {
     }
   };
 
+  const customStyles = {
+    option: provided => ({
+      ...provided,
+      color: 'black',
+    }),
+    control: provided => ({
+      ...provided,
+      color: 'black',
+    }),
+    singleValue: provided => ({
+      ...provided,
+      color: 'black',
+    }),
+  };
+
   return (
     <Container>
       <meta name="viewport" content="width=1024" />
@@ -160,8 +171,9 @@ const Home: NextPage = () => {
         </UtilityButton>
         <UtilityButton onClick={() => retract()}>Retract</UtilityButton>
         <Select
-          className="basic-single"
+          className="basic-single-dark"
           classNamePrefix="select"
+          styles={customStyles}
           defaultValue={aiOptions[0]}
           isDisabled={false}
           isLoading={false}

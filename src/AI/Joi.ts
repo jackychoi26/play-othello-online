@@ -4,7 +4,7 @@ import SquareState from '../models/SquareState';
 import David from './David';
 
 export default class Joi extends David {
-  static description = 'Static weight board';
+  static description = 'Joi: Static weight board';
 
   static staticWeightsBoard = [
     [12, -3, 2, 2, 2, 2, -3, 12],
