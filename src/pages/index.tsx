@@ -171,6 +171,8 @@ const Home: NextPage = () => {
         </UtilityButton>
         <UtilityButton onClick={() => retract()}>Retract</UtilityButton>
         <Select
+          id="long-value-select"
+          instanceId="long-value-select"
           className="basic-single-dark"
           classNamePrefix="select"
           styles={customStyles}
