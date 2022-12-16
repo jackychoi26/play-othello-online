@@ -1,3 +1,4 @@
+import moment from 'moment';
 import Voidable from '../common/Voidable';
 import GameState from '../models/GameState';
 import Player from '../models/Player';
@@ -9,6 +10,7 @@ import MinimaxResult from './MinimaxResult';
 // David is a property of Weyland Corp.
 export default class David implements AI {
   private INFINITY = 9999;
+  private TIME_LIMIT = 10;
 
   constructor(
     private player: Player,
@@ -17,21 +19,30 @@ export default class David implements AI {
 
   think(gameState: GameState): Voidable<Position> {
     if (!gameState.player.isEqualTo(this.player)) return;
+    const startTime = moment();
     const results: MinimaxResult[] = [];
 
-    // TODO: try to eliminate the for loop outside
-    for (let move of gameState.possibleMoves) {
-      const newGameState = judge.placeDisc(gameState, move.position);
+    // No need to think for the first move
+    if (gameState.remainingEmptySquare > 58) {
+      return gameState.possibleMoves[
+        Math.floor(Math.random() * gameState.possibleMoves.length)
+      ].position;
+    }
 
-      if (newGameState !== undefined) {
+    // Iterative deepening
+    for (let i = 1; i < 60; i++) {
+      if (this.isTimeout(startTime, this.TIME_LIMIT)) break;
+
+      for (let move of gameState.possibleMoves) {
         const value = this.minimax(
-          newGameState,
-          5,
-          false,
+          gameState,
+          i,
+          this.player.isEqualTo(gameState.player),
           this.evaluation,
           0,
           0,
-          15
+          15,
+          () => this.isTimeout(startTime, this.TIME_LIMIT)
         );
 
         results.push(new MinimaxResult(move.position, value));
@@ -51,6 +62,15 @@ export default class David implements AI {
     return resultWithHighestValue.position;
   }
 
+  private isTimeout = (
+    startTime: moment.Moment,
+    timeLimit: number
+  ): boolean => {
+    return moment.duration(moment().diff(startTime)).asSeconds() > timeLimit;
+  };
+
+  private depthLimitedSearch = () => {};
+
   private minimax = (
     gameState: GameState,
     depth: number,
@@ -58,12 +78,13 @@ export default class David implements AI {
     evaluation: (gameState: GameState) => number,
     alpha: number,
     beta: number,
-    bruteForceCutOff: number = -this.INFINITY
+    bruteForceCutOff: number = -this.INFINITY,
+    isTimeout: () => boolean
   ): number => {
     const shouldBruteForce = bruteForceCutOff >= gameState.remainingEmptySquare;
 
-    if (!shouldBruteForce) {
-      if (depth < 1 || judge.isGameOver(gameState)) {
+    if (!shouldBruteForce || isTimeout()) {
+      if (depth < 1 || judge.isGameOver(gameState) || isTimeout()) {
         return evaluation(gameState);
       }
     }
@@ -85,7 +106,8 @@ export default class David implements AI {
             shouldBruteForce ? this.coinParity : evaluation,
             maxValue,
             beta,
-            bruteForceCutOff
+            bruteForceCutOff,
+            isTimeout
           );
 
           maxValue = Math.max(childrenValue, maxValue);
@@ -114,7 +136,8 @@ export default class David implements AI {
             shouldBruteForce ? this.coinParity : evaluation,
             alpha,
             minValue,
-            bruteForceCutOff
+            bruteForceCutOff,
+            isTimeout
           );
 
           minValue = Math.min(childrenValue, minValue);
