@@ -38,7 +38,7 @@ export default class Luv extends David {
         const player = cornerOwner(gameState.grid, currentValue);
 
         if (player !== undefined) {
-          const value = player === Player.Black ? 999 : -999;
+          const value = player === gameState.player ? 999 : -999;
           return accumulator + value;
         } else {
           return accumulator;
