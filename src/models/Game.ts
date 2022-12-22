@@ -4,6 +4,7 @@ import Player from './Player';
 import Position from './Position';
 import CanThink from '../AI/AI';
 import Grid from './Grid';
+import PossibleMove from './PossibleMove';
 
 export default class Game {
   static boardSize = 8;
@@ -16,7 +17,6 @@ export default class Game {
   ) {}
 
   static create = (
-    size: number,
     whiteAI: Voidable<CanThink>,
     blackAI: Voidable<CanThink>
   ): Game => {
@@ -91,12 +91,20 @@ export default class Game {
   };
 
   private _placeDisc = (
-    position: Position,
+    possibleMove: PossibleMove,
+    player: Player,
     isPlayerInteraction: boolean
   ): Voidable<GameState> => {
     if (isPlayerInteraction && this.isAIturn()) return;
-    const grid = this.gameState.grid;
-    const newGameState = grid.placeDisc(position);
+    const clonedGrid = this.gameState.grid.placeDisc(possibleMove, player);
+
+    // BUG FIX COULD SKIP TURN
+    this.gameState = this.copyGameState(
+      clonedGrid.isGameOver(),
+      this.gameState.player.opponent(),
+      clonedGrid.getPossibleMoves(player.opponent()),
+      clonedGrid
+    );
 
     if (newGameState !== undefined) {
       newGameState.remainingEmptySquare -= 1;
@@ -110,5 +118,17 @@ export default class Game {
     if (this.gameState.player === Player.White && this.whiteAI) return true;
     if (this.gameState.player === Player.Black && this.blackAI) return true;
     return false;
+  };
+
+  private copyGameState = (gameState: GameState): GameState => {
+    return new GameState(
+      gameState.isGameOver,
+      gameState.player,
+      gameState.possibleMoves.slice(),
+      gameState.grid.clone(),
+      gameState.numberOfBlackDisc,
+      gameState.numberOfWhiteDisc,
+      gameState.remainingEmptySquare
+    );
   };
 }

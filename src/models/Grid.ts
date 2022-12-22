@@ -9,6 +9,8 @@ import SquareState from './SquareState';
 
 export default class Grid {
   private size: number;
+  private possibleMoves: PossibleMove[];
+  private currentPlayer: Player = Player.Black;
 
   static create = (size: number = 8): Grid => {
     const row: SquareState[] = [];
@@ -34,6 +36,7 @@ export default class Grid {
   private constructor(private grid: SquareState[][]) {
     this.grid = grid;
     this.size = grid.length;
+    this.possibleMoves = this._getPossibleMoves(this.currentPlayer);
   }
 
   clone = (): Grid => {
@@ -44,15 +47,24 @@ export default class Grid {
 
   boardSize = (): number => this.size;
 
+  getCurrentPlayer = (): Player => this.currentPlayer;
+
   isGameOver = (): boolean => {
-    const blackMobility = this.getPossibleMoves(Player.Black);
-    const whiteMobility = this.getPossibleMoves(Player.White);
+    const blackMobility = this._getPossibleMoves(Player.Black);
+    const whiteMobility = this._getPossibleMoves(Player.White);
     return blackMobility.length === 0 && whiteMobility.length === 0;
   };
 
-  placeDisc = (possibleMove: PossibleMove, player: Player): Grid => {
-    this.flip(possibleMove, player);
-    return this.clone();
+  placeDisc = (position: Position): boolean => {
+    const possibleMove = this.possibleMoves.find(possibleMove =>
+      possibleMove.position.isEqualTo(position)
+    );
+
+    if (!possibleMove) return false;
+
+    this.flip(possibleMove, this.currentPlayer);
+
+    return true;
   };
 
   numberOfDiscs = (): DiscsSum => {
@@ -72,7 +84,9 @@ export default class Grid {
     return new DiscsSum(numberOfBlackDisc, numberOfWhiteDisc);
   };
 
-  getPossibleMoves = (player: Player): PossibleMove[] => {
+  getPossibleMoves = (): PossibleMove[] => this.possibleMoves;
+
+  private _getPossibleMoves = (player: Player): PossibleMove[] => {
     const possibleMoves: PossibleMove[] = [];
     const emptySquaresAdjacentToDisc = this.getAllEmptySquaresAdjacentToDisc();
 
