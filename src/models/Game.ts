@@ -11,7 +11,7 @@ export default class Game {
   private gameStateHistory: GameState[] = [];
 
   constructor(
-    private gameState: GameState,
+    private grid: Grid,
     private whiteAI: Voidable<CanThink>,
     private blackAI: Voidable<CanThink>
   ) {}
@@ -21,45 +21,43 @@ export default class Game {
     blackAI: Voidable<CanThink>
   ): Game => {
     const grid = Grid.create(8);
-    const discsSum = grid.numberOfDiscs();
-
-    const game = new Game(
-      new GameState(
-        false,
-        Player.Black,
-        grid.getPossibleMoves(Player.Black),
-        grid,
-        discsSum.black,
-        discsSum.white,
-        this.boardSize * this.boardSize - (discsSum.black + discsSum.white)
-      ),
-      whiteAI,
-      blackAI
-    );
+    const game = new Game(grid, whiteAI, blackAI);
 
     return game;
   };
 
-  currentGameState = (): GameState => ({ ...this.gameState });
+  currentGameState = (): GameState => {
+    const discsSum = this.grid.numberOfDiscs();
+
+    // TODO: do we really need PossibleMoves instead of Positions?
+    return new GameState(
+      this.grid.isGameOver(),
+      this.grid.getCurrentPlayer(),
+      this.grid.getPossibleMoves(),
+      this.grid.getGrid(),
+      discsSum.black,
+      discsSum.white,
+      Math.pow(Game.boardSize, 2) - (discsSum.black + discsSum.white)
+    );
+  };
 
   placeDisc = (position: Position): Voidable<GameState> => {
     return this._placeDisc(position, true);
   };
 
   retract = (): Voidable<GameState> => {
-    const lastGameState = this.gameStateHistory.pop();
-
-    if (lastGameState !== undefined) {
-      this.gameState = lastGameState;
-      return lastGameState;
-    }
+    // const lastGameState = this.gameStateHistory.pop();
+    // if (lastGameState !== undefined) {
+    //   this.gameState = lastGameState;
+    //   return lastGameState;
+    // }
   };
 
   nextTurn = (): GameState[] => {
     if (!this.isAIturn()) return [];
 
     const gameStates: GameState[] = [];
-    const turn = this.gameState.player;
+    const turn = this.grid.getCurrentPlayer();
     let gameState = this._thinkIfAIPresent();
 
     if (gameState !== undefined) {
@@ -79,7 +77,7 @@ export default class Game {
   private _thinkIfAIPresent = (): Voidable<GameState> => {
     let position: Voidable<Position>;
 
-    if (this.gameState.player === Player.White) {
+    if (this.grid.getCurrentPlayer() === Player.White) {
       position = this.whiteAI?.think(this.gameState);
     } else if (this.gameState.player === Player.Black) {
       position = this.blackAI?.think(this.gameState);
@@ -91,12 +89,11 @@ export default class Game {
   };
 
   private _placeDisc = (
-    possibleMove: PossibleMove,
-    player: Player,
+    position: Position,
     isPlayerInteraction: boolean
   ): Voidable<GameState> => {
     if (isPlayerInteraction && this.isAIturn()) return;
-    const clonedGrid = this.gameState.grid.placeDisc(possibleMove, player);
+    const clonedGrid = this.gameState.placeDisc(position);
 
     // BUG FIX COULD SKIP TURN
     this.gameState = this.copyGameState(

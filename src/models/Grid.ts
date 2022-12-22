@@ -55,6 +55,7 @@ export default class Grid {
     return blackMobility.length === 0 && whiteMobility.length === 0;
   };
 
+  // TODO: How to handle gameover?
   placeDisc = (position: Position): boolean => {
     const possibleMove = this.possibleMoves.find(possibleMove =>
       possibleMove.position.isEqualTo(position)
@@ -63,7 +64,8 @@ export default class Grid {
     if (!possibleMove) return false;
 
     this.flip(possibleMove, this.currentPlayer);
-
+    // TODO: skip turn handling
+    this.currentPlayer = this.currentPlayer.opponent();
     return true;
   };
 
