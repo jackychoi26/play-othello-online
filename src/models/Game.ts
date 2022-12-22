@@ -1,52 +1,42 @@
 import Voidable from '../common/Voidable';
-import judge from '../utility/judge';
 import GameState from './GameState';
 import Player from './Player';
 import Position from './Position';
-import SquareState from './SquareState';
 import CanThink from '../AI/AI';
+import Grid from './Grid';
 
 export default class Game {
+  static boardSize = 8;
   private gameStateHistory: GameState[] = [];
 
   constructor(
     private gameState: GameState,
     private whiteAI: Voidable<CanThink>,
     private blackAI: Voidable<CanThink>
-  ) {
-    this.gameState.possibleMoves = judge.getPossibleMoves(
-      gameState.grid,
-      gameState.player
-    );
-  }
+  ) {}
 
   static create = (
     size: number,
     whiteAI: Voidable<CanThink>,
     blackAI: Voidable<CanThink>
   ): Game => {
-    const row: SquareState[] = [];
-    let column: SquareState[][] = [];
-
-    for (let _ = 0; _ < size; _++) {
-      row.push(SquareState.empty);
-    }
-
-    for (let _ = 0; _ < size; _++) {
-      column.push(row.slice());
-    }
-
-    column[3][3] = SquareState.white;
-    column[4][4] = SquareState.white;
-
-    column[4][3] = SquareState.black;
-    column[3][4] = SquareState.black;
+    const grid = Grid.create(8);
+    const discsSum = grid.numberOfDiscs();
 
     const game = new Game(
-      new GameState(false, Player.Black, [], column, 2, 2, size * size - 4),
+      new GameState(
+        false,
+        Player.Black,
+        grid.getPossibleMoves(Player.Black),
+        grid,
+        discsSum.black,
+        discsSum.white,
+        this.boardSize * this.boardSize - (discsSum.black + discsSum.white)
+      ),
       whiteAI,
       blackAI
     );
+
     return game;
   };
 
@@ -105,7 +95,8 @@ export default class Game {
     isPlayerInteraction: boolean
   ): Voidable<GameState> => {
     if (isPlayerInteraction && this.isAIturn()) return;
-    const newGameState = judge.placeDisc(this.gameState, position);
+    const grid = this.gameState.grid;
+    const newGameState = grid.placeDisc(position);
 
     if (newGameState !== undefined) {
       newGameState.remainingEmptySquare -= 1;

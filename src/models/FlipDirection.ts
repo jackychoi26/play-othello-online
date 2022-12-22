@@ -1,12 +1,6 @@
-enum FlipDirection {
-  topLeft = 'TOP_LEFT',
-  top = 'TOP',
-  topRight = 'TOP_RIGHT',
-  right = 'RIGHT',
-  bottomRight = 'BOTTOM_RIGHT',
-  bottom = 'BOTTOM',
-  bottomLeft = 'BOTTOM_LEFT',
-  left = 'LEFT',
-}
+import Direction from './Direction';
+import Position from './Position';
 
-export default FlipDirection;
+export default class FlipDirection {
+  constructor(public direction: Direction, public positions: Position[]) {}
+}

@@ -1,9 +1,9 @@
 import Voidable from '../common/Voidable';
 import GameState from '../models/GameState';
+import Grid from '../models/Grid';
 import Player from '../models/Player';
 import Position from '../models/Position';
 import SquareState from '../models/SquareState';
-import judge from '../utility/judge';
 import David from './David';
 
 export default class Luv extends David {
@@ -26,16 +26,18 @@ export default class Luv extends David {
       ];
 
       const cornerOwner = (
-        grid: SquareState[][],
+        grid: Grid,
         position: Position
       ): Voidable<Player> => {
-        const cornerSquare = grid[position.rowIndex][position.columnIndex];
+        const cornerSquare = grid.getSquareByPosition(position);
         if (cornerSquare === SquareState.black) return Player.Black;
         if (cornerSquare === SquareState.white) return Player.White;
       };
 
+      const grid = gameState.grid;
+
       const cornersDifference = corners.reduce((accumulator, currentValue) => {
-        const player = cornerOwner(gameState.grid, currentValue);
+        const player = cornerOwner(grid, currentValue);
 
         if (player !== undefined) {
           const value = player === gameState.player ? 999 : -999;
@@ -45,15 +47,8 @@ export default class Luv extends David {
         }
       }, 0);
 
-      const playerMobility = judge.getPossibleMoves(
-        gameState.grid,
-        player
-      ).length;
-
-      const opponentMobility = judge.getPossibleMoves(
-        gameState.grid,
-        player.opponent()
-      ).length;
+      const playerMobility = grid.getPossibleMoves(player).length;
+      const opponentMobility = grid.getPossibleMoves(player.opponent()).length;
 
       const mobilityDifference = playerMobility - opponentMobility;
       const finalValue = cornersDifference + mobilityDifference;

@@ -3,7 +3,6 @@ import Voidable from '../common/Voidable';
 import GameState from '../models/GameState';
 import Player from '../models/Player';
 import Position from '../models/Position';
-import judge from '../utility/judge';
 import AI from './AI';
 import MinimaxResult from './MinimaxResult';
 
@@ -82,9 +81,10 @@ export default class David implements AI {
     isTimeout: () => boolean
   ): number => {
     const shouldBruteForce = bruteForceCutOff >= gameState.remainingEmptySquare;
+    const grid = gameState.grid;
 
     if (!shouldBruteForce || isTimeout()) {
-      if (depth < 1 || judge.isGameOver(gameState) || isTimeout()) {
+      if (depth < 1 || grid.isGameOver() || isTimeout()) {
         return evaluation(gameState);
       }
     }
@@ -92,11 +92,8 @@ export default class David implements AI {
     if (isMaximizingPlayer) {
       let maxValue = -this.INFINITY;
 
-      for (let move of judge.getPossibleMoves(
-        gameState.grid,
-        gameState.player
-      )) {
-        const newGameState = judge.placeDisc(gameState, move.position);
+      for (let move of grid.getPossibleMoves(gameState.player)) {
+        const newGameState = grid.placeDisc(move.position);
 
         if (newGameState !== undefined) {
           const childrenValue = this.minimax(
@@ -122,11 +119,8 @@ export default class David implements AI {
     } else {
       let minValue = this.INFINITY;
 
-      for (let move of judge.getPossibleMoves(
-        gameState.grid,
-        gameState.player
-      )) {
-        const newGameState = judge.placeDisc(gameState, move.position);
+      for (let move of grid.getPossibleMoves(gameState.player)) {
+        const newGameState = grid.placeDisc(move.position);
 
         if (newGameState !== undefined) {
           const childrenValue = this.minimax(
