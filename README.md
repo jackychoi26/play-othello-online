@@ -9,6 +9,6 @@
 3. Access `localhost:3000`
 
 ## Implmentation
-You may try the app here -> https://github.com/jackychoi26/play-othello-online/actions/runs/3730331017
+You may try the app here -> https://jackychoi26.github.io/play-othello-online/
 
 I also wrote an article about the implementation. Please find out more on https://medium.com/me/stats/post/58131ffe67eb
